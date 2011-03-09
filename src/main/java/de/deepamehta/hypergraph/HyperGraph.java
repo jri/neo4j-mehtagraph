@@ -6,9 +6,9 @@ import java.util.Map;
 
 public interface HyperGraph {
 
-    public HyperNode createHyperNode(Map<String, Object> properties);
+    public HyperNode createHyperNode();
 
-    public HyperEdge createHyperEdge(String edgeType, Map<String, Object> properties);
+    public HyperEdge createHyperEdge(String edgeType);
 
     // ---
 

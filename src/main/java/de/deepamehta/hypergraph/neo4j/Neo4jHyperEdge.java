@@ -31,6 +31,20 @@ class Neo4jHyperEdge extends Neo4jBase implements HyperEdge {
     // -------------------------------------------------------------------------------------------------- Public Methods
 
     @Override
+    public void setAttribute(String key, Object value) {
+        auxiliaryNode.setProperty(key, value);
+    }
+
+    // ---
+
+    @Override
+    public Iterable<String> getAttributeKeys() {
+        return auxiliaryNode.getPropertyKeys();
+    }
+
+    // ---
+
+    @Override
     public void addHyperNode(HyperNode node, String roleType) {
         Node dstNode = ((Neo4jHyperNode) node).getNode();
         auxiliaryNode.createRelationshipTo(dstNode, getRelationshipType(roleType));

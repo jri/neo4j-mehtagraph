@@ -34,6 +34,20 @@ class Neo4jBase {
 
     // ----------------------------------------------------------------------------------------------- Protected Methods
 
+    protected final String getAttributesString(PropertyContainer container) {
+        Map<String, Object> properties = getProperties(container);
+        //
+        StringBuilder builder = new StringBuilder("{");
+        for (String key : properties.keySet()) {
+            if (builder.length() > 1) {
+                builder.append(", ");
+            }
+            builder.append(key + "=" + properties.get(key));
+        }
+        builder.append("}");
+        return builder.toString();
+    }
+
     protected final Map<String, Object> getProperties(PropertyContainer container) {
         Map properties = new HashMap();
         for (String key : container.getPropertyKeys()) {

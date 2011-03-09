@@ -23,10 +23,6 @@ import org.neo4j.graphdb.traversal.Traverser;
 import org.neo4j.helpers.Predicate;
 import org.neo4j.kernel.EmbeddedGraphDatabase;
 import org.neo4j.kernel.Traversal;
-import org.neo4j.index.IndexHits;
-import org.neo4j.index.IndexService;
-import org.neo4j.index.lucene.LuceneIndexService;
-import org.neo4j.index.lucene.LuceneFulltextQueryIndexService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,27 +51,23 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
     // -------------------------------------------------------------------------------------------------- Public Methods
 
     @Override
-    public HyperNode createHyperNode(Map<String, Object> properties) {
+    public HyperNode createHyperNode() {
         Node node = neo4j.createNode();
-        setProperties(node, properties);
         logger.info("### node ID=" + node.getId());
         //
         return new Neo4jHyperNode(node, neo4j);
     }
 
     @Override
-    public HyperEdge createHyperEdge(String edgeType, Map<String, Object> properties) {
-        if (properties == null) {
-            properties = new HashMap();
-        }
-        properties.put(KEY_IS_HYPER_EDGE, true);
-        properties.put(KEY_HYPER_EDGE_TYPE, edgeType);
-        //
+    public HyperEdge createHyperEdge(String edgeType) {
         Node auxiliaryNode = neo4j.createNode();
         logger.info("### auxiliary node ID=" + auxiliaryNode.getId());
-        setProperties(auxiliaryNode, properties);
         //
-        return new Neo4jHyperEdge(auxiliaryNode, neo4j);
+        HyperEdge edge = new Neo4jHyperEdge(auxiliaryNode, neo4j);
+        edge.setAttribute(KEY_IS_HYPER_EDGE, true);
+        edge.setAttribute(KEY_HYPER_EDGE_TYPE, edgeType);
+        //
+        return edge;
     }
 
     // ---
@@ -93,10 +85,4 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
 
     // ------------------------------------------------------------------------------------------------- Private Methods
 
-    private void setProperties(PropertyContainer container, Map<String, Object> properties) {
-        for (String key : properties.keySet()) {
-            Object value = properties.get(key);
-            container.setProperty(key, value);
-        }
-    }
 }

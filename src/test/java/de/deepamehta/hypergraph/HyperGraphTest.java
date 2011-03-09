@@ -37,17 +37,15 @@ public class HyperGraphTest {
     public void test() {
         Transaction tx = hg.beginTx();
         try {
-            Map p1 = new HashMap();
-            p1.put("uri", "dm3.core.topic_type");
-            p1.put("value", "Topic Type");
-            HyperNode node1 = hg.createHyperNode(p1);
+            HyperNode node1 = hg.createHyperNode();
+            node1.setAttribute("uri", "dm3.core.topic_type");
+            node1.setAttribute("value", "Topic Type");
             //
-            Map p2 = new HashMap();
-            p2.put("uri", "dm3.core.data_type");
-            p2.put("value", "Data Type");
-            HyperNode node2 = hg.createHyperNode(p2);
+            HyperNode node2 = hg.createHyperNode();
+            node2.setAttribute("uri", "dm3.core.data_type");
+            node2.setAttribute("value", "Data Type");
             //
-            HyperEdge edge = hg.createHyperEdge("dm3.core.instantiation", null);
+            HyperEdge edge = hg.createHyperEdge("dm3.core.instantiation");
             edge.addHyperNode(node1, "dm3.core.type");
             edge.addHyperNode(node2, "dm3.core.instance");
             //

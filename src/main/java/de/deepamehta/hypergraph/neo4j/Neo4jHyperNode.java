@@ -2,6 +2,7 @@ package de.deepamehta.hypergraph.neo4j;
 
 import de.deepamehta.hypergraph.HyperEdge;
 import de.deepamehta.hypergraph.HyperNode;
+import de.deepamehta.hypergraph.IndexMode;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Direction;
@@ -30,6 +31,30 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
     // -------------------------------------------------------------------------------------------------- Public Methods
 
     @Override
+    public void setAttribute(String key, Object value) {
+        setAttribute(key, value, IndexMode.OFF);
+    }
+
+    @Override
+    public void setAttribute(String key, Object value, IndexMode indexMode) {
+        setAttribute(key, value, indexMode, null);
+    }
+
+    @Override
+    public void setAttribute(String key, Object value, IndexMode indexMode, String indexKey) {
+        node.setProperty(key, value);
+    }
+
+    // ---
+
+    @Override
+    public Iterable<String> getAttributeKeys() {
+        return node.getPropertyKeys();
+    }
+
+    // ---
+
+    @Override
     public String getString(String key) {
         return (String) node.getProperty(key);
     }
@@ -49,7 +74,7 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
 
     @Override
     public String toString() {
-        return "hypernode " + node.getId() + " " + getProperties(node);
+        return "hypernode " + node.getId() + " " + getAttributesString(node);
     }
 
     // ----------------------------------------------------------------------------------------- Package Private Methods
