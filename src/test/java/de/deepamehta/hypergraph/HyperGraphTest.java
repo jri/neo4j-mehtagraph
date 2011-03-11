@@ -3,11 +3,17 @@ package de.deepamehta.hypergraph;
 import de.deepamehta.hypergraph.neo4j.Neo4jHyperGraph;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.index.Index;
+import org.neo4j.helpers.collection.MapUtil;
 import org.neo4j.kernel.EmbeddedGraphDatabase;
 
 import java.io.File;
@@ -30,34 +36,38 @@ public class HyperGraphTest {
 
     @Before
     public void setup() {
-        hg = new Neo4jHyperGraph(new EmbeddedGraphDatabase(createTempDirectory("neo4j")));
+        GraphDatabaseService neo4j = new EmbeddedGraphDatabase(createTempDirectory("neo4j"));
+        // access/create indexes
+        Index<Node> exactIndex = neo4j.index().forNodes("exact");
+        Index<Node> fulltextIndex;
+        if (neo4j.index().existsForNodes("fulltext")) {
+            fulltextIndex = neo4j.index().forNodes("fulltext");
+        } else {
+            Map<String, String> configuration = MapUtil.stringMap("provider", "lucene", "type", "fulltext");
+            fulltextIndex = neo4j.index().forNodes("fulltext", configuration);
+        }
+        //
+        hg = new Neo4jHyperGraph(neo4j, exactIndex, fulltextIndex);
+        //
+        setupContent();
     }
 
     @Test
-    public void test() {
-        Transaction tx = hg.beginTx();
-        try {
-            HyperNode node1 = hg.createHyperNode();
-            node1.setAttribute("uri", "dm3.core.topic_type");
-            node1.setAttribute("value", "Topic Type");
-            //
-            HyperNode node2 = hg.createHyperNode();
-            node2.setAttribute("uri", "dm3.core.data_type");
-            node2.setAttribute("value", "Data Type");
-            //
-            HyperEdge edge = hg.createHyperEdge("dm3.core.instantiation");
-            edge.addHyperNode(node1, "dm3.core.type");
-            edge.addHyperNode(node2, "dm3.core.instance");
-            //
-            HyperNode topicType = getType(node2);
-            logger.info("### topicType=" + topicType);
-            assertEquals("dm3.core.topic_type", topicType.getString("uri"));
-            assertEquals("Topic Type", topicType.getString("value"));
-            //
-            tx.success();
-        } finally {
-            tx.finish();
-        }
+    public void testTraversal() {
+        HyperNode node = hg.getHyperNode("uri", "dm3.core.data_type");
+        HyperNode topicType = getType(node);
+        logger.info("### topicType=" + topicType);
+        assertEquals("dm3.core.topic_type", topicType.getString("uri"));
+        assertEquals("Topic Type", topicType.getString("value"));
+    }
+
+    @Test
+    public void testIndex() {
+        List<HyperNode> nodes1 = hg.queryHyperNodes("DeepaMehta");
+        assertEquals(2, nodes1.size());
+        //
+        List<HyperNode> nodes2 = hg.queryHyperNodes("collaboration platform");
+        assertEquals(1, nodes2.size());
     }
 
     @After
@@ -69,6 +79,37 @@ public class HyperGraphTest {
 
     HyperNode getType(HyperNode node) {
         return node.traverse("dm3.core.instance", "dm3.core.instantiation", "dm3.core.type");
+    }
+
+    private void setupContent() {
+        Transaction tx = hg.beginTx();
+        try {
+            HyperNode node1 = hg.createHyperNode();
+            node1.setAttribute("uri", "dm3.core.topic_type", IndexMode.KEY);
+            node1.setAttribute("value", "Topic Type");
+            //
+            HyperNode node2 = hg.createHyperNode();
+            node2.setAttribute("uri", "dm3.core.data_type", IndexMode.KEY);
+            node2.setAttribute("value", "Data Type", IndexMode.KEY, "dm3.core.topic_type");
+            //
+            HyperEdge edge = hg.createHyperEdge("dm3.core.instantiation");
+            edge.addHyperNode(node1, "dm3.core.type");
+            edge.addHyperNode(node2, "dm3.core.instance");
+            //
+            HyperNode node3 = hg.createHyperNode();
+            node3.setAttribute("uri", "note-1", IndexMode.KEY);
+            node3.setAttribute("value", "DeepaMehta is a platform for collaboration and knowledge management",
+                IndexMode.FULLTEXT, "dm3.notes.text");
+            //
+            HyperNode node4 = hg.createHyperNode();
+            node4.setAttribute("uri", "note-2", IndexMode.KEY);
+            node4.setAttribute("value", "Lead developer of DeepaMehta is Jörg Richter",
+                IndexMode.FULLTEXT, "dm3.workspaces.description");
+            //
+            tx.success();
+        } finally {
+            tx.finish();
+        }
     }
 
     // ---

@@ -17,6 +17,7 @@ import org.neo4j.graphdb.ReturnableEvaluator;
 import org.neo4j.graphdb.StopEvaluator;
 import org.neo4j.graphdb.TraversalPosition;
 import org.neo4j.graphdb.Traverser.Order;
+import org.neo4j.graphdb.index.Index;
 import org.neo4j.graphdb.traversal.PruneEvaluator;
 import org.neo4j.graphdb.traversal.TraversalDescription;
 import org.neo4j.graphdb.traversal.Traverser;
@@ -44,30 +45,45 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
 
     // ---------------------------------------------------------------------------------------------------- Constructors
 
-    public Neo4jHyperGraph(GraphDatabaseService neo4j) {
-        super(neo4j);
+    public Neo4jHyperGraph(GraphDatabaseService neo4j, Index exactIndex, Index fulltextIndex) {
+        super(neo4j, exactIndex, fulltextIndex);
     }
 
     // -------------------------------------------------------------------------------------------------- Public Methods
 
     @Override
     public HyperNode createHyperNode() {
-        Node node = neo4j.createNode();
-        logger.info("### node ID=" + node.getId());
-        //
-        return new Neo4jHyperNode(node, neo4j);
+        return buildHyperNode(neo4j.createNode());
     }
 
     @Override
     public HyperEdge createHyperEdge(String edgeType) {
-        Node auxiliaryNode = neo4j.createNode();
-        logger.info("### auxiliary node ID=" + auxiliaryNode.getId());
-        //
-        HyperEdge edge = new Neo4jHyperEdge(auxiliaryNode, neo4j);
+        HyperEdge edge = buildHyperEdge(neo4j.createNode());
         edge.setAttribute(KEY_IS_HYPER_EDGE, true);
         edge.setAttribute(KEY_HYPER_EDGE_TYPE, edgeType);
-        //
         return edge;
+    }
+
+    // ---
+
+    @Override
+    public HyperNode getHyperNode(String key, Object value) {
+        Node node = exactIndex.get(key, value).getSingle();
+        return node != null ? buildHyperNode(node) : null;
+    }
+
+    @Override
+    public List<HyperNode> queryHyperNodes(Object value) {
+        return queryHyperNodes(KEY_FULLTEXT, value);
+    }
+
+    @Override
+    public List<HyperNode> queryHyperNodes(String key, Object value) {
+        List nodes = new ArrayList();
+        for (Node node : fulltextIndex.query(key, value)) {
+            nodes.add(buildHyperNode(node));
+        }
+        return nodes;
     }
 
     // ---
@@ -84,5 +100,4 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
     }
 
     // ------------------------------------------------------------------------------------------------- Private Methods
-
 }

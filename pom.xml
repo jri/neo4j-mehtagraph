@@ -7,7 +7,7 @@
     <name>Neo4j Hypergraph</name>
     <groupId>de.deepamehta</groupId>
     <artifactId>neo4j-hypergraph</artifactId>
-    <version>0.1</version>
+    <version>0.2-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <properties>
@@ -19,6 +19,11 @@
             <groupId>org.neo4j</groupId>
             <artifactId>neo4j-kernel</artifactId>
             <version>1.2-1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.neo4j</groupId>
+            <artifactId>neo4j-lucene-index</artifactId>
+            <version>0.2-1.2</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

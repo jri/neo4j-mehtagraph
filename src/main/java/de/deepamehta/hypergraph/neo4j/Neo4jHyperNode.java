@@ -8,12 +8,15 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.index.Index;
 
 import java.util.logging.Logger;
 
 
 
 class Neo4jHyperNode extends Neo4jBase implements HyperNode {
+
+    // ------------------------------------------------------------------------------------------------------- Constants
 
     // ---------------------------------------------------------------------------------------------- Instance Variables
 
@@ -23,8 +26,8 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
 
     // ---------------------------------------------------------------------------------------------------- Constructors
 
-    Neo4jHyperNode(Node node, GraphDatabaseService neo4j) {
-        super(neo4j);
+    Neo4jHyperNode(Node node, GraphDatabaseService neo4j, Index exactIndex, Index fulltextIndex) {
+        super(neo4j, exactIndex, fulltextIndex);
         this.node = node;
     }
 
@@ -37,12 +40,38 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
 
     @Override
     public void setAttribute(String key, Object value, IndexMode indexMode) {
-        setAttribute(key, value, indexMode, null);
+        setAttribute(key, value, indexMode, key);
     }
 
     @Override
     public void setAttribute(String key, Object value, IndexMode indexMode, String indexKey) {
+        Object oldValue = get(key, null);
+        // 1) update DB
         node.setProperty(key, value);
+        // 2) update index
+        indexProperty(indexMode, indexKey, value, oldValue);
+    }
+
+    // ---
+
+    @Override
+    public Object get(String key) {
+        return node.getProperty(key);
+    }
+
+    @Override
+    public Object get(String key, Object defaultValue) {
+        return node.getProperty(key, defaultValue);
+    }
+
+    @Override
+    public String getString(String key) {
+        return (String) get(key);
+    }
+
+    @Override
+    public String getString(String key, Object defaultValue) {
+        return (String) get(key, defaultValue);
     }
 
     // ---
@@ -55,11 +84,6 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
     // ---
 
     @Override
-    public String getString(String key) {
-        return (String) node.getProperty(key);
-    }
-
-    @Override
     public HyperNode traverse(String myRoleType, String edgeType, String othersRoleType) {
         Relationship rel = node.getSingleRelationship(getRelationshipType(myRoleType), Direction.INCOMING);
         if (rel == null) return null;
@@ -67,7 +91,7 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
         if (!auxiliaryNode.getProperty(KEY_HYPER_EDGE_TYPE).equals(edgeType)) return null;
         rel = auxiliaryNode.getSingleRelationship(getRelationshipType(othersRoleType), Direction.OUTGOING);
         if (rel == null) return null;
-        return new Neo4jHyperNode(rel.getEndNode(), neo4j);
+        return buildHyperNode(rel.getEndNode());
     }
 
     // ---
@@ -81,5 +105,32 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
 
     Node getNode() {
         return node;
+    }
+
+    // ------------------------------------------------------------------------------------------------- Private Methods
+
+    private void indexProperty(IndexMode indexMode, String indexKey, Object value, Object oldValue) {
+        if (indexMode == IndexMode.OFF) {
+            return;
+        } else if (indexMode == IndexMode.KEY) {
+            if (oldValue != null) {
+                exactIndex.remove(node, indexKey, oldValue);            // remove old
+            }
+            exactIndex.add(node, indexKey, value);                      // index new
+        } else if (indexMode == IndexMode.FULLTEXT) {
+            // Note: all the topic's FULLTEXT properties are indexed under the same key ("default").
+            // So, when removing from index we must explicitley give the old value.
+            if (oldValue != null) {
+                fulltextIndex.remove(node, KEY_FULLTEXT, oldValue);     // remove old
+            }
+            fulltextIndex.add(node, KEY_FULLTEXT, value);               // index new
+        } else if (indexMode == IndexMode.FULLTEXT_KEY) {
+            if (oldValue != null) {
+                fulltextIndex.remove(node, indexKey, oldValue);         // remove old
+            }
+            fulltextIndex.add(node, indexKey, value);                   // index new
+        } else {
+            throw new RuntimeException("Index mode \"" + indexMode + "\" not implemented");
+        }
     }
 }

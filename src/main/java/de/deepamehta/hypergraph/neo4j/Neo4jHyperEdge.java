@@ -8,6 +8,7 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
+import org.neo4j.graphdb.index.Index;
 
 import java.util.logging.Logger;
 
@@ -23,8 +24,8 @@ class Neo4jHyperEdge extends Neo4jBase implements HyperEdge {
 
     // ---------------------------------------------------------------------------------------------------- Constructors
 
-    Neo4jHyperEdge(Node auxiliaryNode, GraphDatabaseService neo4j) {
-        super(neo4j);
+    Neo4jHyperEdge(Node auxiliaryNode, GraphDatabaseService neo4j, Index exactIndex, Index fulltextIndex) {
+        super(neo4j, exactIndex, fulltextIndex);
         this.auxiliaryNode = auxiliaryNode;
     }
 
