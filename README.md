@@ -18,11 +18,17 @@ Is a graph where an edge can link to other edges a known structure? What's its n
 Version History
 ---------------
 
+**v0.2** -- Mar 13, 2011
+
+* Indexing
+* Query index
+
 **v0.1** -- Mar 8, 2011
 
-* Rudimentary functionality: creating hypernodes and hyperedges, basic traversal.
+* Creating hypernodes and hyperedges
+* Basic traversal.
 
 
 ------------
 Jörg Richter  
-Mar 8, 2011
+Mar 13, 2011

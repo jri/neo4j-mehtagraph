@@ -34,6 +34,52 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
     // -------------------------------------------------------------------------------------------------- Public Methods
 
     @Override
+    public long getId() {
+        return node.getId();
+    }
+
+    // ---
+
+    @Override
+    public String getString(String key) {
+        return (String) get(key);
+    }
+
+    @Override
+    public String getString(String key, String defaultValue) {
+        return (String) get(key, defaultValue);
+    }
+
+    @Override
+    public int getInteger(String key) {
+        return (Integer) get(key);
+    }
+
+    @Override
+    public int getInteger(String key, int defaultValue) {
+        return (Integer) get(key, defaultValue);
+    }
+
+    @Override
+    public Object get(String key) {
+        return node.getProperty(key);
+    }
+
+    @Override
+    public Object get(String key, Object defaultValue) {
+        return node.getProperty(key, defaultValue);
+    }
+
+    // ---
+
+    @Override
+    public Iterable<String> getAttributeKeys() {
+        return node.getPropertyKeys();
+    }
+
+    // ---
+
+    @Override
     public void setAttribute(String key, Object value) {
         setAttribute(key, value, IndexMode.OFF);
     }
@@ -54,31 +100,8 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
 
     // ---
 
-    @Override
-    public Object get(String key) {
-        return node.getProperty(key);
-    }
-
-    @Override
-    public Object get(String key, Object defaultValue) {
-        return node.getProperty(key, defaultValue);
-    }
-
-    @Override
-    public String getString(String key) {
-        return (String) get(key);
-    }
-
-    @Override
-    public String getString(String key, Object defaultValue) {
-        return (String) get(key, defaultValue);
-    }
-
-    // ---
-
-    @Override
-    public Iterable<String> getAttributeKeys() {
-        return node.getPropertyKeys();
+    public boolean hasAttribute(String key) {
+        return node.hasProperty(key);
     }
 
     // ---

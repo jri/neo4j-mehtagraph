@@ -36,6 +36,10 @@ class Neo4jBase {
 
     // ---------------------------------------------------------------------------------------------------- Constructors
 
+    protected Neo4jBase(GraphDatabaseService neo4j) {
+        this.neo4j = neo4j;
+    }
+
     protected Neo4jBase(GraphDatabaseService neo4j, Index exactIndex, Index fulltextIndex) {
         this.neo4j = neo4j;
         this.exactIndex = exactIndex;
@@ -82,14 +86,14 @@ class Neo4jBase {
 
     protected final HyperNode buildHyperNode(Node node) {
         if (node == null) {
-            throw new NullPointerException("Tried to build a HyperNode with node=null");
+            throw new NullPointerException("Tried to build a HyperNode from a null Node");
         }
         return new Neo4jHyperNode(node, neo4j, exactIndex, fulltextIndex);
     }
 
     protected final HyperEdge buildHyperEdge(Node auxiliaryNode) {
         if (auxiliaryNode == null) {
-            throw new NullPointerException("Tried to build a HyperEdge with auxiliaryNode=null");
+            throw new NullPointerException("Tried to build a HyperEdge from a null auxiliary Node");
         }
         return new Neo4jHyperEdge(auxiliaryNode, neo4j, exactIndex, fulltextIndex);
     }

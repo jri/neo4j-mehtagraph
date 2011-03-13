@@ -22,6 +22,7 @@ import org.neo4j.graphdb.traversal.PruneEvaluator;
 import org.neo4j.graphdb.traversal.TraversalDescription;
 import org.neo4j.graphdb.traversal.Traverser;
 import org.neo4j.helpers.Predicate;
+import org.neo4j.helpers.collection.MapUtil;
 import org.neo4j.kernel.EmbeddedGraphDatabase;
 import org.neo4j.kernel.Traversal;
 
@@ -45,8 +46,20 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
 
     // ---------------------------------------------------------------------------------------------------- Constructors
 
-    public Neo4jHyperGraph(GraphDatabaseService neo4j, Index exactIndex, Index fulltextIndex) {
-        super(neo4j, exactIndex, fulltextIndex);
+    public Neo4jHyperGraph(GraphDatabaseService neo4j) {
+        super(neo4j);
+        try {
+            // access/create indexes
+            this.exactIndex = neo4j.index().forNodes("exact");
+            if (neo4j.index().existsForNodes("fulltext")) {
+                this.fulltextIndex = neo4j.index().forNodes("fulltext");
+            } else {
+                Map<String, String> configuration = MapUtil.stringMap("provider", "lucene", "type", "fulltext");
+                this.fulltextIndex = neo4j.index().forNodes("fulltext", configuration);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Creating database indexes failed", e);
+        }
     }
 
     // -------------------------------------------------------------------------------------------------- Public Methods
@@ -65,6 +78,11 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
     }
 
     // ---
+
+    @Override
+    public HyperNode getHyperNode(long id) {
+        return buildHyperNode(neo4j.getNodeById(id));
+    }
 
     @Override
     public HyperNode getHyperNode(String key, Object value) {

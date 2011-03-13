@@ -37,17 +37,7 @@ public class HyperGraphTest {
     @Before
     public void setup() {
         GraphDatabaseService neo4j = new EmbeddedGraphDatabase(createTempDirectory("neo4j"));
-        // access/create indexes
-        Index<Node> exactIndex = neo4j.index().forNodes("exact");
-        Index<Node> fulltextIndex;
-        if (neo4j.index().existsForNodes("fulltext")) {
-            fulltextIndex = neo4j.index().forNodes("fulltext");
-        } else {
-            Map<String, String> configuration = MapUtil.stringMap("provider", "lucene", "type", "fulltext");
-            fulltextIndex = neo4j.index().forNodes("fulltext", configuration);
-        }
-        //
-        hg = new Neo4jHyperGraph(neo4j, exactIndex, fulltextIndex);
+        hg = new Neo4jHyperGraph(neo4j);
         //
         setupContent();
     }
