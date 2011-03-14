@@ -68,7 +68,7 @@ public class HyperGraphTest {
     // ------------------------------------------------------------------------------------------------- Private Methods
 
     HyperNode getType(HyperNode node) {
-        return node.traverse("dm3.core.instance", "dm3.core.instantiation", "dm3.core.type");
+        return node.traverse("dm3.core.instance", "dm3.core.type");
     }
 
     private void setupContent() {
@@ -82,7 +82,7 @@ public class HyperGraphTest {
             node2.setAttribute("uri", "dm3.core.data_type", IndexMode.KEY);
             node2.setAttribute("value", "Data Type", IndexMode.KEY, "dm3.core.topic_type");
             //
-            HyperEdge edge = hg.createHyperEdge("dm3.core.instantiation");
+            HyperEdge edge = hg.createHyperEdge();
             edge.addHyperNode(node1, "dm3.core.type");
             edge.addHyperNode(node2, "dm3.core.instance");
             //

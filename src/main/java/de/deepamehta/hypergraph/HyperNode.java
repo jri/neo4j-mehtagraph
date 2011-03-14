@@ -21,5 +21,5 @@ public interface HyperNode {
 
     public boolean hasAttribute(String key);
 
-    public HyperNode traverse(String myRoleType, String edgeType, String othersRoleType);
+    public HyperNode traverse(String myRoleType, String othersRoleType);
 }
