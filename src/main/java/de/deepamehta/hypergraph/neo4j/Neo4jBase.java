@@ -9,7 +9,14 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.PropertyContainer;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
-import org.neo4j.graphdb.index.Index;
+// FIXME: new index API doesn't work with OSGi
+// import org.neo4j.graphdb.index.Index;
+//
+// Using old index API instead
+import org.neo4j.index.IndexHits;
+import org.neo4j.index.IndexService;
+import org.neo4j.index.lucene.LuceneIndexService;
+import org.neo4j.index.lucene.LuceneFulltextQueryIndexService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,8 +38,13 @@ class Neo4jBase {
     private final Logger logger = Logger.getLogger(getClass().getName());
 
     protected GraphDatabaseService neo4j;
-    protected Index<Node> exactIndex;
-    protected Index<Node> fulltextIndex;
+    // FIXME: new index API doesn't work with OSGi
+    // protected Index<Node> exactIndex;
+    // protected Index<Node> fulltextIndex;
+    //
+    // Using old index API instead
+    protected IndexService exactIndex;
+    protected LuceneFulltextQueryIndexService fulltextIndex;
 
     // ---------------------------------------------------------------------------------------------------- Constructors
 
@@ -40,7 +52,9 @@ class Neo4jBase {
         this.neo4j = neo4j;
     }
 
-    protected Neo4jBase(GraphDatabaseService neo4j, Index exactIndex, Index fulltextIndex) {
+    protected Neo4jBase(GraphDatabaseService neo4j, IndexService exactIndex,
+                        LuceneFulltextQueryIndexService fulltextIndex
+                        /* FIXME: Index exactIndex, Index fulltextIndex */) {
         this.neo4j = neo4j;
         this.exactIndex = exactIndex;
         this.fulltextIndex = fulltextIndex;

@@ -8,7 +8,14 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
-import org.neo4j.graphdb.index.Index;
+// FIXME: new index API doesn't work with OSGi
+// import org.neo4j.graphdb.index.Index;
+//
+// Using old index API instead
+import org.neo4j.index.IndexHits;
+import org.neo4j.index.IndexService;
+import org.neo4j.index.lucene.LuceneIndexService;
+import org.neo4j.index.lucene.LuceneFulltextQueryIndexService;
 
 import java.util.logging.Logger;
 
@@ -24,7 +31,9 @@ class Neo4jHyperEdge extends Neo4jBase implements HyperEdge {
 
     // ---------------------------------------------------------------------------------------------------- Constructors
 
-    Neo4jHyperEdge(Node auxiliaryNode, GraphDatabaseService neo4j, Index exactIndex, Index fulltextIndex) {
+    Neo4jHyperEdge(Node auxiliaryNode, GraphDatabaseService neo4j, IndexService exactIndex,
+                        LuceneFulltextQueryIndexService fulltextIndex
+                        /* FIXME: Index exactIndex, Index fulltextIndex */) {
         super(neo4j, exactIndex, fulltextIndex);
         this.auxiliaryNode = auxiliaryNode;
     }

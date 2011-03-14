@@ -8,7 +8,14 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.index.Index;
+// FIXME: new index API doesn't work with OSGi
+// import org.neo4j.graphdb.index.Index;
+//
+// Using old index API instead
+import org.neo4j.index.IndexHits;
+import org.neo4j.index.IndexService;
+import org.neo4j.index.lucene.LuceneIndexService;
+import org.neo4j.index.lucene.LuceneFulltextQueryIndexService;
 
 import java.util.logging.Logger;
 
@@ -26,7 +33,9 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
 
     // ---------------------------------------------------------------------------------------------------- Constructors
 
-    Neo4jHyperNode(Node node, GraphDatabaseService neo4j, Index exactIndex, Index fulltextIndex) {
+    Neo4jHyperNode(Node node, GraphDatabaseService neo4j, IndexService exactIndex,
+                        LuceneFulltextQueryIndexService fulltextIndex
+                        /* FIXME: Index exactIndex, Index fulltextIndex */) {
         super(neo4j, exactIndex, fulltextIndex);
         this.node = node;
     }
@@ -137,21 +146,33 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
             return;
         } else if (indexMode == IndexMode.KEY) {
             if (oldValue != null) {
-                exactIndex.remove(node, indexKey, oldValue);            // remove old
+                // FIXME: new index API doesn't work with OSGi
+                // exactIndex.remove(node, indexKey, oldValue);             // remove old
+                exactIndex.removeIndex(node, indexKey, oldValue);           // remove old
             }
-            exactIndex.add(node, indexKey, value);                      // index new
+            // FIXME: new index API doesn't work with OSGi
+            // exactIndex.add(node, indexKey, value);                       // index new
+            exactIndex.index(node, indexKey, value);                        // index new
         } else if (indexMode == IndexMode.FULLTEXT) {
             // Note: all the topic's FULLTEXT properties are indexed under the same key ("default").
             // So, when removing from index we must explicitley give the old value.
             if (oldValue != null) {
-                fulltextIndex.remove(node, KEY_FULLTEXT, oldValue);     // remove old
+                // FIXME: new index API doesn't work with OSGi
+                // fulltextIndex.remove(node, KEY_FULLTEXT, oldValue);      // remove old
+                fulltextIndex.removeIndex(node, KEY_FULLTEXT, oldValue);    // remove old
             }
-            fulltextIndex.add(node, KEY_FULLTEXT, value);               // index new
+            // FIXME: new index API doesn't work with OSGi
+            // fulltextIndex.add(node, KEY_FULLTEXT, value);                // index new
+            fulltextIndex.index(node, KEY_FULLTEXT, value);                 // index new
         } else if (indexMode == IndexMode.FULLTEXT_KEY) {
             if (oldValue != null) {
-                fulltextIndex.remove(node, indexKey, oldValue);         // remove old
+                // FIXME: new index API doesn't work with OSGi
+                // fulltextIndex.remove(node, indexKey, oldValue);          // remove old
+                fulltextIndex.removeIndex(node, indexKey, oldValue);        // remove old
             }
-            fulltextIndex.add(node, indexKey, value);                   // index new
+            // FIXME: new index API doesn't work with OSGi
+            // fulltextIndex.add(node, indexKey, value);                    // index new
+            fulltextIndex.index(node, indexKey, value);                     // index new
         } else {
             throw new RuntimeException("Index mode \"" + indexMode + "\" not implemented");
         }

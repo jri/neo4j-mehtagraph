@@ -17,7 +17,8 @@ import org.neo4j.graphdb.ReturnableEvaluator;
 import org.neo4j.graphdb.StopEvaluator;
 import org.neo4j.graphdb.TraversalPosition;
 import org.neo4j.graphdb.Traverser.Order;
-import org.neo4j.graphdb.index.Index;
+// FIXME: new index API doesn't work with OSGi
+// import org.neo4j.graphdb.index.Index;
 import org.neo4j.graphdb.traversal.PruneEvaluator;
 import org.neo4j.graphdb.traversal.TraversalDescription;
 import org.neo4j.graphdb.traversal.Traverser;
@@ -25,6 +26,12 @@ import org.neo4j.helpers.Predicate;
 import org.neo4j.helpers.collection.MapUtil;
 import org.neo4j.kernel.EmbeddedGraphDatabase;
 import org.neo4j.kernel.Traversal;
+// Using old index API instead
+import org.neo4j.index.IndexHits;
+import org.neo4j.index.IndexService;
+import org.neo4j.index.lucene.LuceneIndexService;
+import org.neo4j.index.lucene.LuceneFulltextQueryIndexService;
+
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,6 +56,7 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
     public Neo4jHyperGraph(GraphDatabaseService neo4j) {
         super(neo4j);
         try {
+            /* FIXME: new index API doesn't work with OSGi
             // access/create indexes
             this.exactIndex = neo4j.index().forNodes("exact");
             if (neo4j.index().existsForNodes("fulltext")) {
@@ -56,7 +64,9 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
             } else {
                 Map<String, String> configuration = MapUtil.stringMap("provider", "lucene", "type", "fulltext");
                 this.fulltextIndex = neo4j.index().forNodes("fulltext", configuration);
-            }
+            } */
+            this.exactIndex = new LuceneIndexService(neo4j);
+            this.fulltextIndex = new LuceneFulltextQueryIndexService(neo4j);
         } catch (Exception e) {
             throw new RuntimeException("Creating database indexes failed", e);
         }
@@ -86,7 +96,9 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
 
     @Override
     public HyperNode getHyperNode(String key, Object value) {
-        Node node = exactIndex.get(key, value).getSingle();
+        // FIXME: new index API doesn't work with OSGi
+        // Node node = exactIndex.get(key, value).getSingle();
+        Node node = exactIndex.getSingleNode(key, value);
         return node != null ? buildHyperNode(node) : null;
     }
 
@@ -98,7 +110,9 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
     @Override
     public List<HyperNode> queryHyperNodes(String key, Object value) {
         List nodes = new ArrayList();
-        for (Node node : fulltextIndex.query(key, value)) {
+        // FIXME: new index API doesn't work with OSGi
+        // for (Node node : fulltextIndex.query(key, value)) {
+        for (Node node : fulltextIndex.getNodes(key, value)) {
             nodes.add(buildHyperNode(node));
         }
         return nodes;
