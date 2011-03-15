@@ -28,9 +28,9 @@ class Neo4jBase {
 
     // ------------------------------------------------------------------------------------------------------- Constants
 
-    protected static final String KEY_IS_HYPER_EDGE = "is_hyper_edge";
+    protected static final String KEY_IS_HYPER_EDGE = "_is_hyper_edge";
 
-    protected static final String KEY_FULLTEXT = "fulltext";
+    protected static final String KEY_FULLTEXT = "_fulltext";
 
     // ---------------------------------------------------------------------------------------------- Instance Variables
 

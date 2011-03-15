@@ -8,6 +8,8 @@ public interface HyperNode {
 
     public long getId();
 
+    // === Get Attributes ===
+
     public String getString(String key);
     public String getString(String key, String defaultValue);
     public int getInteger(String key);
@@ -17,11 +19,17 @@ public interface HyperNode {
 
     public Iterable<String> getAttributeKeys();
 
+    public boolean hasAttribute(String key);
+
+    // === Set Attributes ===
+
     public void setAttribute(String key, Object value);
     public void setAttribute(String key, Object value, IndexMode indexMode);
     public void setAttribute(String key, Object value, IndexMode indexMode, String indexKey);
 
-    public boolean hasAttribute(String key);
+    // === Traversal ===
+
+    public Set<HyperEdge> getHyperEdges(String myRoleType);
 
     public HyperNode traverseSingle(String myRoleType, String othersRoleType);
     public Set<ConnectedHyperNode> traverse(String myRoleType, String othersRoleType);

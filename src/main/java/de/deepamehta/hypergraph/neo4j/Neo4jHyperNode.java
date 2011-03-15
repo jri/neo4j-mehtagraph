@@ -57,7 +57,7 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
         return node.getId();
     }
 
-    // ---
+    // === Get Attributes ===
 
     @Override
     public String getString(String key) {
@@ -98,6 +98,12 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
 
     // ---
 
+    public boolean hasAttribute(String key) {
+        return node.hasProperty(key);
+    }
+
+    // === Set Attributes ===
+
     @Override
     public void setAttribute(String key, Object value) {
         setAttribute(key, value, IndexMode.OFF);
@@ -117,10 +123,16 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
         indexProperty(indexMode, indexKey, value, oldValue);
     }
 
-    // ---
+    // === Traversal ===
 
-    public boolean hasAttribute(String key) {
-        return node.hasProperty(key);
+    @Override
+    public Set<HyperEdge> getHyperEdges(String myRoleType) {
+        Set edges = new HashSet();
+        for (Relationship rel : node.getRelationships(getRelationshipType(myRoleType), Direction.INCOMING)) {
+            Node auxiliaryNode = rel.getStartNode();
+            edges.add(buildHyperEdge(auxiliaryNode));
+        }
+        return edges;
     }
 
     // ---
@@ -135,6 +147,7 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
         return buildHyperNode(rel.getEndNode());
     }
 
+    @Override
     public Set<ConnectedHyperNode> traverse(String myRoleType, String othersRoleType) {
         TraversalDescription desc = Traversal.description();
         desc = desc.evaluator(new RoleTypeEvaluator(myRoleType, othersRoleType));
@@ -145,7 +158,7 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
         for (Path path : desc.traverse(node)) {
             // sanity check
             if (path.length() != 2) {
-                throw new RuntimeException("You don't understand Neo4j traversal");
+                throw new RuntimeException("jri doesn't understand Neo4j traversal");
             }
             //
             HyperNode hyperNode = buildHyperNode(path.endNode());
@@ -227,17 +240,17 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
             Relationship rel = path.lastRelationship();
             if (path.length() == 1) {
                 if (!rel.isType(myRoleType)) {
-                    throw new RuntimeException("You don't understand Neo4j traversal or your graph is fucked");
+                    throw new RuntimeException("jri doesn't understand Neo4j traversal or your graph is fucked");
                 }
                 if (rel.getEndNode().getId() != node.getId() || rel.getStartNode().getId() != path.endNode().getId()) {
-                    throw new RuntimeException("You don't understand Neo4j traversal or your graph is fucked");
+                    throw new RuntimeException("jri doesn't understand Neo4j traversal or your graph is fucked");
                 }
             } else if (path.length() == 2) {
                 if (!rel.isType(othersRoleType)) {
-                    throw new RuntimeException("You don't understand Neo4j traversal or your graph is fucked");
+                    throw new RuntimeException("jri doesn't understand Neo4j traversal or your graph is fucked");
                 }
                 if (rel.getEndNode().getId() != path.endNode().getId()) {
-                    throw new RuntimeException("You don't understand Neo4j traversal or your graph is fucked");
+                    throw new RuntimeException("jri doesn't understand Neo4j traversal or your graph is fucked");
                 }
             }
             //

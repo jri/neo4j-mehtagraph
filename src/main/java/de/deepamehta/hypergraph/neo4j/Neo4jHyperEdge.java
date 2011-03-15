@@ -3,7 +3,7 @@ package de.deepamehta.hypergraph.neo4j;
 import de.deepamehta.hypergraph.HyperEdge;
 import de.deepamehta.hypergraph.HyperNode;
 
-import org.neo4j.graphdb.DynamicRelationshipType;
+import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
@@ -48,20 +48,6 @@ class Neo4jHyperEdge extends Neo4jBase implements HyperEdge {
     // ---
 
     @Override
-    public Iterable<String> getAttributeKeys() {
-        return auxiliaryNode.getPropertyKeys();
-    }
-
-    // ---
-
-    @Override
-    public void setAttribute(String key, Object value) {
-        auxiliaryNode.setProperty(key, value);
-    }
-
-    // ---
-
-    @Override
     public void addHyperNode(HyperNode node, String roleType) {
         Node dstNode = ((Neo4jHyperNode) node).getNode();
         auxiliaryNode.createRelationshipTo(dstNode, getRelationshipType(roleType));
@@ -71,6 +57,29 @@ class Neo4jHyperEdge extends Neo4jBase implements HyperEdge {
     public void addHyperEdge(HyperEdge edge, String roleType) {
         Node dstNode = ((Neo4jHyperEdge) edge).getNode();
         auxiliaryNode.createRelationshipTo(dstNode, getRelationshipType(roleType));
+    }
+
+    // ---
+
+    @Override
+    public HyperNode getHyperNode(String roleType) {
+        Relationship rel = auxiliaryNode.getSingleRelationship(getRelationshipType(roleType), Direction.OUTGOING);
+        if (rel == null) return null;
+        return buildHyperNode(rel.getEndNode());
+    }
+
+    // === Get Attributes ===
+
+    @Override
+    public Iterable<String> getAttributeKeys() {
+        return auxiliaryNode.getPropertyKeys();
+    }
+
+    // === Set Attributes ===
+
+    @Override
+    public void setAttribute(String key, Object value) {
+        auxiliaryNode.setProperty(key, value);
     }
 
     // ----------------------------------------------------------------------------------------- Package Private Methods
