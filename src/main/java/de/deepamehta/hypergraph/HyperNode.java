@@ -1,5 +1,7 @@
 package de.deepamehta.hypergraph;
 
+import java.util.Set;
+
 
 
 public interface HyperNode {
@@ -21,5 +23,6 @@ public interface HyperNode {
 
     public boolean hasAttribute(String key);
 
-    public HyperNode traverse(String myRoleType, String othersRoleType);
+    public HyperNode traverseSingle(String myRoleType, String othersRoleType);
+    public Set<ConnectedHyperNode> traverse(String myRoleType, String othersRoleType);
 }

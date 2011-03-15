@@ -41,8 +41,8 @@ class Neo4jHyperEdge extends Neo4jBase implements HyperEdge {
     // -------------------------------------------------------------------------------------------------- Public Methods
 
     @Override
-    public void setAttribute(String key, Object value) {
-        auxiliaryNode.setProperty(key, value);
+    public long getId() {
+        return auxiliaryNode.getId();
     }
 
     // ---
@@ -50,6 +50,13 @@ class Neo4jHyperEdge extends Neo4jBase implements HyperEdge {
     @Override
     public Iterable<String> getAttributeKeys() {
         return auxiliaryNode.getPropertyKeys();
+    }
+
+    // ---
+
+    @Override
+    public void setAttribute(String key, Object value) {
+        auxiliaryNode.setProperty(key, value);
     }
 
     // ---
