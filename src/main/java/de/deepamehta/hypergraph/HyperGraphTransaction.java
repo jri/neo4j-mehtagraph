@@ -2,7 +2,7 @@ package de.deepamehta.hypergraph;
 
 
 
-public interface Transaction {
+public interface HyperGraphTransaction {
 
     void success();
 

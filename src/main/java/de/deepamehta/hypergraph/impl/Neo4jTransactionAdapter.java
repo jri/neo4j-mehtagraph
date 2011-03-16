@@ -1,15 +1,20 @@
-package de.deepamehta.hypergraph.neo4j;
+package de.deepamehta.hypergraph.impl;
+
+import de.deepamehta.hypergraph.HyperGraphTransaction;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Transaction;
 
 
 
-class Neo4jTransaction implements de.deepamehta.hypergraph.Transaction {
+/**
+ * Adapts a Neo4j transaction to a HyperGraph transaction.
+ */
+class Neo4jTransactionAdapter implements HyperGraphTransaction {
 
     private Transaction tx;
 
-    Neo4jTransaction(GraphDatabaseService neo4j) {
+    Neo4jTransactionAdapter(GraphDatabaseService neo4j) {
         tx = neo4j.beginTx();
     }
 

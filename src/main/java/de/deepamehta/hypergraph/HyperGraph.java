@@ -20,6 +20,6 @@ public interface HyperGraph {
 
     // ---
 
-    public Transaction beginTx();
+    public HyperGraphTransaction beginTx();
     public void shutdown();
 }

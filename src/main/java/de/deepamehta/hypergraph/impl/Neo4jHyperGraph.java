@@ -1,9 +1,9 @@
-package de.deepamehta.hypergraph.neo4j;
+package de.deepamehta.hypergraph.impl;
 
 import de.deepamehta.hypergraph.HyperEdge;
 import de.deepamehta.hypergraph.HyperGraph;
 import de.deepamehta.hypergraph.HyperNode;
-import de.deepamehta.hypergraph.Transaction;
+import de.deepamehta.hypergraph.HyperGraphTransaction;
 
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.DynamicRelationshipType;
@@ -120,8 +120,8 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
     // ---
 
     @Override
-    public Transaction beginTx() {
-        return new Neo4jTransaction(neo4j);
+    public HyperGraphTransaction beginTx() {
+        return new Neo4jTransactionAdapter(neo4j);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package de.deepamehta.hypergraph;
 
-import de.deepamehta.hypergraph.neo4j.Neo4jHyperGraph;
+import de.deepamehta.hypergraph.impl.Neo4jHyperGraph;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -72,7 +72,7 @@ public class HyperGraphTest {
     }
 
     private void setupContent() {
-        Transaction tx = hg.beginTx();
+        HyperGraphTransaction tx = hg.beginTx();
         try {
             HyperNode node1 = hg.createHyperNode();
             node1.setAttribute("uri", "dm3.core.topic_type", IndexMode.KEY);

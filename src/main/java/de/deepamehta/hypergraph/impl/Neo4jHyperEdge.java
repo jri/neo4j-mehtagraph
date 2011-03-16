@@ -1,4 +1,4 @@
-package de.deepamehta.hypergraph.neo4j;
+package de.deepamehta.hypergraph.impl;
 
 import de.deepamehta.hypergraph.HyperEdge;
 import de.deepamehta.hypergraph.HyperNode;
