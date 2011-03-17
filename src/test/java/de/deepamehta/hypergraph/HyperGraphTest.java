@@ -68,7 +68,7 @@ public class HyperGraphTest {
     // ------------------------------------------------------------------------------------------------- Private Methods
 
     HyperNode getType(HyperNode node) {
-        return node.traverseSingle("dm3.core.instance", "dm3.core.type");
+        return node.getConnectedHyperNode("dm3.core.instance", "dm3.core.type").getHyperNode();
     }
 
     private void setupContent() {

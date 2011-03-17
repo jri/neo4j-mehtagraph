@@ -10,10 +10,21 @@ public interface HyperNode {
 
     // === Get Attributes ===
 
+    /**
+     * @throws  Exception    if node has no attribute with that key
+     */
     public String getString(String key);
     public String getString(String key, String defaultValue);
+
+    /**
+     * @throws  Exception    if node has no attribute with that key
+     */
     public int getInteger(String key);
     public int getInteger(String key, int defaultValue);
+
+    /**
+     * @throws  Exception    if node has no attribute with that key
+     */
     public Object get(String key);
     public Object get(String key, Object defaultValue);
 
@@ -23,14 +34,25 @@ public interface HyperNode {
 
     // === Set Attributes ===
 
+    /**
+     * @throws  IllegalArgumentException    if value is null
+     */
     public void setAttribute(String key, Object value);
+
+    /**
+     * @throws  IllegalArgumentException    if value is null
+     */
     public void setAttribute(String key, Object value, IndexMode indexMode);
+
+    /**
+     * @throws  IllegalArgumentException    if value is null
+     */
     public void setAttribute(String key, Object value, IndexMode indexMode, String indexKey);
 
     // === Traversal ===
 
     public Set<HyperEdge> getHyperEdges(String myRoleType);
 
-    public HyperNode traverseSingle(String myRoleType, String othersRoleType);
-    public Set<ConnectedHyperNode> traverse(String myRoleType, String othersRoleType);
+    public ConnectedHyperNode getConnectedHyperNode(String myRoleType, String othersRoleType);
+    public Set<ConnectedHyperNode> getConnectedHyperNodes(String myRoleType, String othersRoleType);
 }

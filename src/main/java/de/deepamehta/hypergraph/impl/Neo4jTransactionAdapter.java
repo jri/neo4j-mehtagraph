@@ -12,20 +12,29 @@ import org.neo4j.graphdb.Transaction;
  */
 class Neo4jTransactionAdapter implements HyperGraphTransaction {
 
+    // ---------------------------------------------------------------------------------------------- Instance Variables
+
     private Transaction tx;
+
+    // ---------------------------------------------------------------------------------------------------- Constructors
 
     Neo4jTransactionAdapter(GraphDatabaseService neo4j) {
         tx = neo4j.beginTx();
     }
 
+    // -------------------------------------------------------------------------------------------------- Public Methods
+
+    @Override
     public void success() {
         tx.success();
     }
 
+    @Override
     public void failure() {
         tx.failure();
     }
 
+    @Override
     public void finish() {
         tx.finish();
     }

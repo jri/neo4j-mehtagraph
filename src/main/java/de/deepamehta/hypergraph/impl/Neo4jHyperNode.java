@@ -138,17 +138,17 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
     // ---
 
     @Override
-    public HyperNode traverseSingle(String myRoleType, String othersRoleType) {
+    public ConnectedHyperNode getConnectedHyperNode(String myRoleType, String othersRoleType) {
         Relationship rel = node.getSingleRelationship(getRelationshipType(myRoleType), Direction.INCOMING);
         if (rel == null) return null;
         Node auxiliaryNode = rel.getStartNode();
         rel = auxiliaryNode.getSingleRelationship(getRelationshipType(othersRoleType), Direction.OUTGOING);
         if (rel == null) return null;
-        return buildHyperNode(rel.getEndNode());
+        return new ConnectedHyperNode(buildHyperNode(rel.getEndNode()), auxiliaryNode.getId());
     }
 
     @Override
-    public Set<ConnectedHyperNode> traverse(String myRoleType, String othersRoleType) {
+    public Set<ConnectedHyperNode> getConnectedHyperNodes(String myRoleType, String othersRoleType) {
         TraversalDescription desc = Traversal.description();
         desc = desc.evaluator(new RoleTypeEvaluator(myRoleType, othersRoleType));
         desc = desc.relationships(getRelationshipType(myRoleType), Direction.INCOMING);
