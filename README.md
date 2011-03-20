@@ -18,6 +18,10 @@ Is a graph where an edge can link to other edges a known structure? What's its n
 Version History
 ---------------
 
+**v0.3** -- Mar 20, 2011
+
+* More traversal
+
 **v0.2** -- Mar 13, 2011
 
 * Indexing
@@ -31,4 +35,4 @@ Version History
 
 ------------
 Jörg Richter  
-Mar 13, 2011
+Mar 20, 2011
