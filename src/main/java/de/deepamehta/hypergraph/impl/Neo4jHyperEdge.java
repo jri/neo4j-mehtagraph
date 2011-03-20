@@ -2,6 +2,7 @@ package de.deepamehta.hypergraph.impl;
 
 import de.deepamehta.hypergraph.HyperEdge;
 import de.deepamehta.hypergraph.HyperNode;
+import de.deepamehta.hypergraph.HyperNodeRole;
 
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -17,6 +18,8 @@ import org.neo4j.index.IndexService;
 import org.neo4j.index.lucene.LuceneIndexService;
 import org.neo4j.index.lucene.LuceneFulltextQueryIndexService;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
 
@@ -65,7 +68,20 @@ class Neo4jHyperEdge extends Neo4jBase implements HyperEdge {
     public HyperNode getHyperNode(String roleType) {
         Relationship rel = auxiliaryNode.getSingleRelationship(getRelationshipType(roleType), Direction.OUTGOING);
         if (rel == null) return null;
+        // FIXME: check if end node is really an HyperNode (and not an HyperEdge)
         return buildHyperNode(rel.getEndNode());
+    }
+
+    @Override
+    public Set<HyperNodeRole> getHyperNodes() {
+        Set<HyperNodeRole> roles = new HashSet();
+        for (Relationship rel : auxiliaryNode.getRelationships(Direction.OUTGOING)) {
+            // FIXME: check if end node is really an HyperNode (and not an HyperEdge)
+            HyperNode node = buildHyperNode(rel.getEndNode());
+            String roleType = rel.getType().name();
+            roles.add(new HyperNodeRole(node, roleType));
+        }
+        return roles;
     }
 
     // === Get Attributes ===

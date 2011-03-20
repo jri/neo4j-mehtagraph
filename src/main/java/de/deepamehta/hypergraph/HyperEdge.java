@@ -1,5 +1,7 @@
 package de.deepamehta.hypergraph;
 
+import java.util.Set;
+
 
 
 public interface HyperEdge {
@@ -10,6 +12,7 @@ public interface HyperEdge {
     void addHyperEdge(HyperEdge edge, String roleType);
 
     HyperNode getHyperNode(String roleType);
+    Set<HyperNodeRole> getHyperNodes();
 
     // === Get Attributes ===
 
