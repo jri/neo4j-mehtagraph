@@ -120,6 +120,13 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
     // ---
 
     @Override
+    public HyperEdge getHyperEdge(long id) {
+        return buildHyperEdge(neo4j.getNodeById(id));
+    }
+
+    // ---
+
+    @Override
     public HyperGraphTransaction beginTx() {
         return new Neo4jTransactionAdapter(neo4j);
     }

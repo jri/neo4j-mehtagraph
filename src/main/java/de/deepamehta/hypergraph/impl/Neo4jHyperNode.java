@@ -139,12 +139,16 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
 
     @Override
     public ConnectedHyperNode getConnectedHyperNode(String myRoleType, String othersRoleType) {
-        Relationship rel = node.getSingleRelationship(getRelationshipType(myRoleType), Direction.INCOMING);
-        if (rel == null) return null;
-        Node auxiliaryNode = rel.getStartNode();
-        rel = auxiliaryNode.getSingleRelationship(getRelationshipType(othersRoleType), Direction.OUTGOING);
-        if (rel == null) return null;
-        return new ConnectedHyperNode(buildHyperNode(rel.getEndNode()), auxiliaryNode.getId());
+        Set<ConnectedHyperNode> nodes = getConnectedHyperNodes(myRoleType, othersRoleType);
+        switch (nodes.size()) {
+        case 0:
+            return null;
+        case 1:
+            return nodes.iterator().next();
+        default:
+            throw new RuntimeException("Ambiguity: there are " + nodes.size() + " connected nodes (" + this +
+                ", myRoleType=\"" + myRoleType + "\", othersRoleType=\"" + othersRoleType + "\")");
+        }
     }
 
     @Override

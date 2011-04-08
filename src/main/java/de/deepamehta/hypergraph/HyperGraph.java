@@ -20,6 +20,10 @@ public interface HyperGraph {
 
     // ---
 
+    public HyperEdge getHyperEdge(long id);
+
+    // ---
+
     public HyperGraphTransaction beginTx();
     public void shutdown();
 }
