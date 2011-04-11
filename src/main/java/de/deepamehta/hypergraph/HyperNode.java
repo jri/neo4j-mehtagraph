@@ -25,6 +25,12 @@ public interface HyperNode {
     /**
      * @throws  Exception    if node has no attribute with that key
      */
+    public boolean getBoolean(String key);
+    public boolean getBoolean(String key, boolean defaultValue);
+
+    /**
+     * @throws  Exception    if node has no attribute with that key
+     */
     public Object get(String key);
     public Object get(String key, Object defaultValue);
 

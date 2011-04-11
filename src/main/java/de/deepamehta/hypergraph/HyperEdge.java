@@ -8,11 +8,21 @@ public interface HyperEdge {
 
     long getId();
 
+    // ---
+
     void addHyperNode(HyperNode node, String roleType);
+
     void addHyperEdge(HyperEdge edge, String roleType);
 
+    // ---
+
     HyperNode getHyperNode(String roleType);
+
+    // ---
+
     Set<HyperNodeRole> getHyperNodes();
+
+    Set<HyperEdgeRole> getHyperEdges();
 
     // === Get Attributes ===
 

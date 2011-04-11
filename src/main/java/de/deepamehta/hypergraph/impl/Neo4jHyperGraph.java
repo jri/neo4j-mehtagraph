@@ -81,9 +81,9 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
 
     @Override
     public HyperEdge createHyperEdge() {
-        HyperEdge edge = buildHyperEdge(neo4j.createNode());
-        edge.setAttribute(KEY_IS_HYPER_EDGE, true);
-        return edge;
+        Node auxiliaryNode = neo4j.createNode();
+        auxiliaryNode.setProperty(KEY_IS_HYPER_EDGE, true);
+        return buildHyperEdge(auxiliaryNode);
     }
 
     // ---

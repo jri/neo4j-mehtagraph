@@ -61,6 +61,35 @@ class Neo4jBase {
 
     // ----------------------------------------------------------------------------------------------- Protected Methods
 
+    protected final HyperNode buildHyperNode(Node node) {
+        if (node == null) {
+            throw new IllegalArgumentException("Tried to build a HyperNode from a null Node");
+        }
+        if (isAuxiliaryNode(node)) {
+            throw new IllegalArgumentException("ID " + node.getId() + " refers not to a HyperNode but to a HyperEdge");
+        }
+        return new Neo4jHyperNode(node, neo4j, exactIndex, fulltextIndex);
+    }
+
+    protected final HyperEdge buildHyperEdge(Node auxiliaryNode) {
+        if (auxiliaryNode == null) {
+            throw new IllegalArgumentException("Tried to build a HyperEdge from a null auxiliary Node");
+        }
+        if (!isAuxiliaryNode(auxiliaryNode)) {
+            throw new IllegalArgumentException("ID " + auxiliaryNode.getId() + " refers not to a HyperEdge but to " +
+                "a HyperNode");
+        }
+        return new Neo4jHyperEdge(auxiliaryNode, neo4j, exactIndex, fulltextIndex);
+    }
+
+    // ---
+
+    protected final boolean isAuxiliaryNode(Node node) {
+        return (Boolean) node.getProperty(KEY_IS_HYPER_EDGE, false);
+    }
+
+    // ---
+
     protected final String getAttributesString(PropertyContainer container) {
         Map<String, Object> properties = getProperties(container);
         //
@@ -93,21 +122,5 @@ class Neo4jBase {
         // fallback: create new type
         logger.info("### Relation type \"" + typeName + "\" does not exist -- Creating it dynamically");
         return DynamicRelationshipType.withName(typeName);
-    }
-
-    // ---
-
-    protected final HyperNode buildHyperNode(Node node) {
-        if (node == null) {
-            throw new IllegalArgumentException("Tried to build a HyperNode from a null Node");
-        }
-        return new Neo4jHyperNode(node, neo4j, exactIndex, fulltextIndex);
-    }
-
-    protected final HyperEdge buildHyperEdge(Node auxiliaryNode) {
-        if (auxiliaryNode == null) {
-            throw new IllegalArgumentException("Tried to build a HyperEdge from a null auxiliary Node");
-        }
-        return new Neo4jHyperEdge(auxiliaryNode, neo4j, exactIndex, fulltextIndex);
     }
 }

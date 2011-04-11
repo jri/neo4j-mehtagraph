@@ -1,6 +1,7 @@
 package de.deepamehta.hypergraph.impl;
 
 import de.deepamehta.hypergraph.HyperEdge;
+import de.deepamehta.hypergraph.HyperEdgeRole;
 import de.deepamehta.hypergraph.HyperNode;
 import de.deepamehta.hypergraph.HyperNodeRole;
 
@@ -72,16 +73,34 @@ class Neo4jHyperEdge extends Neo4jBase implements HyperEdge {
         return buildHyperNode(rel.getEndNode());
     }
 
+    // ---
+
     @Override
     public Set<HyperNodeRole> getHyperNodes() {
-        Set<HyperNodeRole> roles = new HashSet();
+        Set<HyperNodeRole> nodeRoles = new HashSet();
         for (Relationship rel : auxiliaryNode.getRelationships(Direction.OUTGOING)) {
-            // FIXME: check if end node is really an HyperNode (and not an HyperEdge)
-            HyperNode node = buildHyperNode(rel.getEndNode());
+            Node node = rel.getEndNode();
+            if (isAuxiliaryNode(node)) {
+                continue;
+            }
             String roleType = rel.getType().name();
-            roles.add(new HyperNodeRole(node, roleType));
+            nodeRoles.add(new HyperNodeRole(buildHyperNode(node), roleType));
         }
-        return roles;
+        return nodeRoles;
+    }
+
+    @Override
+    public Set<HyperEdgeRole> getHyperEdges() {
+        Set<HyperEdgeRole> edgeRoles = new HashSet();
+        for (Relationship rel : auxiliaryNode.getRelationships(Direction.OUTGOING)) {
+            Node node = rel.getEndNode();
+            if (!isAuxiliaryNode(node)) {
+                continue;
+            }
+            String roleType = rel.getType().name();
+            edgeRoles.add(new HyperEdgeRole(buildHyperEdge(node), roleType));
+        }
+        return edgeRoles;
     }
 
     // === Get Attributes ===

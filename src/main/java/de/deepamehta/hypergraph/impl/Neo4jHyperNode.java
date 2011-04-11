@@ -80,6 +80,16 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
     }
 
     @Override
+    public boolean getBoolean(String key) {
+        return (Boolean) get(key);
+    }
+
+    @Override
+    public boolean getBoolean(String key, boolean defaultValue) {
+        return (Boolean) get(key, defaultValue);
+    }
+
+    @Override
     public Object get(String key) {
         return node.getProperty(key);
     }
