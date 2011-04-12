@@ -1,5 +1,6 @@
 package de.deepamehta.hypergraph.impl;
 
+import de.deepamehta.hypergraph.ConnectedHyperEdge;
 import de.deepamehta.hypergraph.HyperEdge;
 import de.deepamehta.hypergraph.HyperEdgeRole;
 import de.deepamehta.hypergraph.HyperNode;
@@ -115,6 +116,18 @@ class Neo4jHyperEdge extends Neo4jBase implements HyperEdge {
     @Override
     public void setAttribute(String key, Object value) {
         auxiliaryNode.setProperty(key, value);
+    }
+
+    // === Traversal ===
+
+    @Override
+    public ConnectedHyperEdge getConnectedHyperEdge(String myRoleType, String othersRoleType) {
+        return super.getConnectedHyperEdge(auxiliaryNode, myRoleType, othersRoleType);
+    }
+
+    @Override
+    public Set<ConnectedHyperEdge> getConnectedHyperEdges(String myRoleType, String othersRoleType) {
+        return super.getConnectedHyperEdges(auxiliaryNode, myRoleType, othersRoleType);
     }
 
     // ----------------------------------------------------------------------------------------- Package Private Methods

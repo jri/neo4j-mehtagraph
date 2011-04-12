@@ -1,5 +1,6 @@
 package de.deepamehta.hypergraph.impl;
 
+import de.deepamehta.hypergraph.ConnectedHyperEdge;
 import de.deepamehta.hypergraph.ConnectedHyperNode;
 import de.deepamehta.hypergraph.HyperEdge;
 import de.deepamehta.hypergraph.HyperNode;
@@ -8,14 +9,7 @@ import de.deepamehta.hypergraph.IndexMode;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.RelationshipType;
-import org.neo4j.graphdb.traversal.Evaluation;
-import org.neo4j.graphdb.traversal.Evaluator;
-import org.neo4j.graphdb.traversal.TraversalDescription;
-import org.neo4j.kernel.EmbeddedGraphDatabase;
-import org.neo4j.kernel.Traversal;
 // FIXME: new index API doesn't work with OSGi
 // import org.neo4j.graphdb.index.Index;
 //
@@ -163,23 +157,24 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
 
     @Override
     public Set<ConnectedHyperNode> getConnectedHyperNodes(String myRoleType, String othersRoleType) {
-        TraversalDescription desc = Traversal.description();
-        desc = desc.evaluator(new RoleTypeEvaluator(myRoleType, othersRoleType));
-        desc = desc.relationships(getRelationshipType(myRoleType), Direction.INCOMING);
-        desc = desc.relationships(getRelationshipType(othersRoleType), Direction.OUTGOING);
-        //
-        Set result = new HashSet();
-        for (Path path : desc.traverse(node)) {
-            // sanity check
-            if (path.length() != 2) {
-                throw new RuntimeException("jri doesn't understand Neo4j traversal");
+        return new TraveralResultBuilder(node, myRoleType, othersRoleType) {
+            @Override
+            Object buildResult(Node connectedNode, Node auxiliaryNode) {
+                return new ConnectedHyperNode(buildHyperNode(connectedNode), buildHyperEdge(auxiliaryNode));
             }
-            //
-            HyperNode hyperNode = buildHyperNode(path.endNode());
-            long hyperEdgeId = path.lastRelationship().getOtherNode(path.endNode()).getId();
-            result.add(new ConnectedHyperNode(hyperNode, hyperEdgeId));
-        }
-        return result;
+        }.getResult();
+    }
+
+    // ---
+
+    @Override
+    public ConnectedHyperEdge getConnectedHyperEdge(String myRoleType, String othersRoleType) {
+        return super.getConnectedHyperEdge(node, myRoleType, othersRoleType);
+    }
+
+    @Override
+    public Set<ConnectedHyperEdge> getConnectedHyperEdges(String myRoleType, String othersRoleType) {
+        return super.getConnectedHyperEdges(node, myRoleType, othersRoleType);
     }
 
     // ---
@@ -233,44 +228,6 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
             fulltextIndex.index(node, indexKey, value);                     // index new
         } else {
             throw new RuntimeException("Index mode \"" + indexMode + "\" not implemented");
-        }
-    }
-
-    // === Traversal ===
-
-    private class RoleTypeEvaluator implements Evaluator {
-
-        private RelationshipType myRoleType;
-        private RelationshipType othersRoleType;
-
-        private RoleTypeEvaluator(String myRoleType, String othersRoleType) {
-            this.myRoleType = getRelationshipType(myRoleType);
-            this.othersRoleType = getRelationshipType(othersRoleType);
-        }
-
-        @Override
-        public Evaluation evaluate(Path path) {
-            // sanity checks
-            Relationship rel = path.lastRelationship();
-            if (path.length() == 1) {
-                if (!rel.isType(myRoleType)) {
-                    throw new RuntimeException("jri doesn't understand Neo4j traversal or your graph is fucked");
-                }
-                if (rel.getEndNode().getId() != node.getId() || rel.getStartNode().getId() != path.endNode().getId()) {
-                    throw new RuntimeException("jri doesn't understand Neo4j traversal or your graph is fucked");
-                }
-            } else if (path.length() == 2) {
-                if (!rel.isType(othersRoleType)) {
-                    throw new RuntimeException("jri doesn't understand Neo4j traversal or your graph is fucked");
-                }
-                if (rel.getEndNode().getId() != path.endNode().getId()) {
-                    throw new RuntimeException("jri doesn't understand Neo4j traversal or your graph is fucked");
-                }
-            }
-            //
-            boolean includes = path.length() == 2;
-            boolean continues = path.length() < 2;
-            return Evaluation.of(includes, continues);
         }
     }
 }

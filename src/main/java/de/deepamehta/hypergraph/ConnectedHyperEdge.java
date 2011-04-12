@@ -2,24 +2,24 @@ package de.deepamehta.hypergraph;
 
 
 
-public class ConnectedHyperNode {
+public class ConnectedHyperEdge {
 
     // ---------------------------------------------------------------------------------------------- Instance Variables
 
-    private HyperNode hyperNode;
+    private HyperEdge hyperEdge;
     private HyperEdge connectingHyperEdge;
 
     // ---------------------------------------------------------------------------------------------------- Constructors
 
-    public ConnectedHyperNode(HyperNode hyperNode, HyperEdge connectingHyperEdge) {
-        this.hyperNode = hyperNode;
+    public ConnectedHyperEdge(HyperEdge hyperEdge, HyperEdge connectingHyperEdge) {
+        this.hyperEdge = hyperEdge;
         this.connectingHyperEdge = connectingHyperEdge;
     }
 
     // -------------------------------------------------------------------------------------------------- Public Methods
 
-    public HyperNode getHyperNode() {
-        return hyperNode;
+    public HyperEdge getHyperEdge() {
+        return hyperEdge;
     }
 
     public HyperEdge getConnectingHyperEdge() {

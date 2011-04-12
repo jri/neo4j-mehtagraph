@@ -61,4 +61,7 @@ public interface HyperNode {
 
     public ConnectedHyperNode getConnectedHyperNode(String myRoleType, String othersRoleType);
     public Set<ConnectedHyperNode> getConnectedHyperNodes(String myRoleType, String othersRoleType);
+
+    public ConnectedHyperEdge getConnectedHyperEdge(String myRoleType, String othersRoleType);
+    public Set<ConnectedHyperEdge> getConnectedHyperEdges(String myRoleType, String othersRoleType);
 }
