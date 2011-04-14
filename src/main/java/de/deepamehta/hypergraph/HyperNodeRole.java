@@ -25,4 +25,11 @@ public class HyperNodeRole {
     public String getRoleType() {
         return roleType;
     }
+
+    // ---
+
+    @Override
+    public String toString() {
+        return "hyper node role (" + hyperNode + ", roleType=\"" + roleType + "\")";
+    }
 }

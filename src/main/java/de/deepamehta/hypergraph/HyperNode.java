@@ -6,62 +6,64 @@ import java.util.Set;
 
 public interface HyperNode {
 
-    public long getId();
+    long getId();
 
     // === Get Attributes ===
 
     /**
      * @throws  Exception    if node has no attribute with that key
      */
-    public String getString(String key);
-    public String getString(String key, String defaultValue);
+    String getString(String key);
+    String getString(String key, String defaultValue);
 
     /**
      * @throws  Exception    if node has no attribute with that key
      */
-    public int getInteger(String key);
-    public int getInteger(String key, int defaultValue);
+    int getInteger(String key);
+    int getInteger(String key, int defaultValue);
 
     /**
      * @throws  Exception    if node has no attribute with that key
      */
-    public boolean getBoolean(String key);
-    public boolean getBoolean(String key, boolean defaultValue);
+    boolean getBoolean(String key);
+    boolean getBoolean(String key, boolean defaultValue);
 
     /**
      * @throws  Exception    if node has no attribute with that key
      */
-    public Object get(String key);
-    public Object get(String key, Object defaultValue);
+    Object get(String key);
+    Object get(String key, Object defaultValue);
 
-    public Iterable<String> getAttributeKeys();
+    Iterable<String> getAttributeKeys();
 
-    public boolean hasAttribute(String key);
+    boolean hasAttribute(String key);
 
     // === Set Attributes ===
 
     /**
      * @throws  IllegalArgumentException    if value is null
      */
-    public void setAttribute(String key, Object value);
+    void setAttribute(String key, Object value);
 
     /**
      * @throws  IllegalArgumentException    if value is null
      */
-    public void setAttribute(String key, Object value, IndexMode indexMode);
+    void setAttribute(String key, Object value, IndexMode indexMode);
 
     /**
      * @throws  IllegalArgumentException    if value is null
      */
-    public void setAttribute(String key, Object value, IndexMode indexMode, String indexKey);
+    void setAttribute(String key, Object value, IndexMode indexMode, String indexKey);
 
     // === Traversal ===
 
-    public Set<HyperEdge> getHyperEdges(String myRoleType);
+    Set<HyperEdge> getHyperEdges(String myRoleType);
 
-    public ConnectedHyperNode getConnectedHyperNode(String myRoleType, String othersRoleType);
-    public Set<ConnectedHyperNode> getConnectedHyperNodes(String myRoleType, String othersRoleType);
+    Set<ConnectedHyperNode> getConnectedHyperNodes();
 
-    public ConnectedHyperEdge getConnectedHyperEdge(String myRoleType, String othersRoleType);
-    public Set<ConnectedHyperEdge> getConnectedHyperEdges(String myRoleType, String othersRoleType);
+    ConnectedHyperNode getConnectedHyperNode(String myRoleType, String othersRoleType);
+    Set<ConnectedHyperNode> getConnectedHyperNodes(String myRoleType, String othersRoleType);
+
+    ConnectedHyperEdge getConnectedHyperEdge(String myRoleType, String othersRoleType);
+    Set<ConnectedHyperEdge> getConnectedHyperEdges(String myRoleType, String othersRoleType);
 }

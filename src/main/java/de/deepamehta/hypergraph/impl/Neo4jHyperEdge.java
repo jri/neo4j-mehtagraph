@@ -1,5 +1,6 @@
 package de.deepamehta.hypergraph.impl;
 
+import de.deepamehta.hypergraph.ConnectedHyperNode;
 import de.deepamehta.hypergraph.ConnectedHyperEdge;
 import de.deepamehta.hypergraph.HyperEdge;
 import de.deepamehta.hypergraph.HyperEdgeRole;
@@ -121,6 +122,18 @@ class Neo4jHyperEdge extends Neo4jBase implements HyperEdge {
     // === Traversal ===
 
     @Override
+    public ConnectedHyperNode getConnectedHyperNode(String myRoleType, String othersRoleType) {
+        return super.getConnectedHyperNode(auxiliaryNode, myRoleType, othersRoleType);
+    }
+
+    @Override
+    public Set<ConnectedHyperNode> getConnectedHyperNodes(String myRoleType, String othersRoleType) {
+        return super.getConnectedHyperNodes(auxiliaryNode, myRoleType, othersRoleType);
+    }
+
+    // ---
+
+    @Override
     public ConnectedHyperEdge getConnectedHyperEdge(String myRoleType, String othersRoleType) {
         return super.getConnectedHyperEdge(auxiliaryNode, myRoleType, othersRoleType);
     }
@@ -128,6 +141,20 @@ class Neo4jHyperEdge extends Neo4jBase implements HyperEdge {
     @Override
     public Set<ConnectedHyperEdge> getConnectedHyperEdges(String myRoleType, String othersRoleType) {
         return super.getConnectedHyperEdges(auxiliaryNode, myRoleType, othersRoleType);
+    }
+
+    // ---
+
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder("hyper edge " + auxiliaryNode.getId());
+        for (HyperNodeRole nodeRole : getHyperNodes()) {
+            str.append("\n        " + nodeRole.getHyperNode() + ", roleType=\"" + nodeRole.getRoleType() + "\"");
+        }
+        for (HyperEdgeRole edgeRole : getHyperEdges()) {
+            str.append("\n        " + edgeRole.getHyperEdge() + ", roleType=\"" + edgeRole.getRoleType() + "\"");
+        }
+        return str.toString();
     }
 
     // ----------------------------------------------------------------------------------------- Package Private Methods

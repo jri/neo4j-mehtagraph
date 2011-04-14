@@ -95,6 +95,11 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
 
     @Override
     public HyperNode getHyperNode(String key, Object value) {
+        if (value == null) {
+            throw new IllegalArgumentException("Tried to call getHyperNode() with a null value Object (key=\"" +
+                key + "\")");
+        }
+        //
         // FIXME: new index API doesn't work with OSGi
         // Node node = exactIndex.get(key, value).getSingle();
         Node node = exactIndex.getSingleNode(key, value);
@@ -108,6 +113,11 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
 
     @Override
     public List<HyperNode> queryHyperNodes(String key, Object value) {
+        if (value == null) {
+            throw new IllegalArgumentException("Tried to call queryHyperNodes() with a null value Object (key=\"" +
+                key + "\")");
+        }
+        //
         List nodes = new ArrayList();
         // FIXME: new index API doesn't work with OSGi
         // for (Node node : fulltextIndex.query(key, value)) {

@@ -1,6 +1,7 @@
 package de.deepamehta.hypergraph.impl;
 
 import de.deepamehta.hypergraph.ConnectedHyperEdge;
+import de.deepamehta.hypergraph.ConnectedHyperNode;
 import de.deepamehta.hypergraph.HyperNode;
 import de.deepamehta.hypergraph.HyperEdge;
 
@@ -135,6 +136,31 @@ class Neo4jBase {
 
     // === Traversal ===
 
+    protected final ConnectedHyperNode getConnectedHyperNode(Node node, String myRoleType, String othersRoleType) {
+        Set<ConnectedHyperNode> nodes = getConnectedHyperNodes(node, myRoleType, othersRoleType);
+        switch (nodes.size()) {
+        case 0:
+            return null;
+        case 1:
+            return nodes.iterator().next();
+        default:
+            throw new RuntimeException("Ambiguity: there are " + nodes.size() + " connected nodes (" + node +
+                ", myRoleType=\"" + myRoleType + "\", othersRoleType=\"" + othersRoleType + "\")");
+        }
+    }
+
+    protected final Set<ConnectedHyperNode> getConnectedHyperNodes(Node node, String myRoleType,
+                                                                              String othersRoleType) {
+        return new TraveralResultBuilder(node, myRoleType, othersRoleType) {
+            @Override
+            Object buildResult(Node connectedNode, Node auxiliaryNode) {
+                return new ConnectedHyperNode(buildHyperNode(connectedNode), buildHyperEdge(auxiliaryNode));
+            }
+        }.getResult();
+    }
+
+    // ---
+
     protected final ConnectedHyperEdge getConnectedHyperEdge(Node node, String myRoleType, String othersRoleType) {
         Set<ConnectedHyperEdge> edges = getConnectedHyperEdges(node, myRoleType, othersRoleType);
         switch (edges.size()) {
@@ -166,9 +192,15 @@ class Neo4jBase {
 
         protected TraveralResultBuilder(Node node, String myRoleType, String othersRoleType) {
             TraversalDescription desc = Traversal.description();
-            desc = desc.evaluator(new RoleTypeEvaluator(node, myRoleType, othersRoleType));
-            desc = desc.relationships(getRelationshipType(myRoleType), Direction.INCOMING);
-            desc = desc.relationships(getRelationshipType(othersRoleType), Direction.OUTGOING);
+            if (myRoleType != null && othersRoleType != null) {
+                desc = desc.evaluator(new RoleTypeEvaluator(myRoleType, othersRoleType));
+                desc = desc.relationships(getRelationshipType(myRoleType), Direction.INCOMING);
+                desc = desc.relationships(getRelationshipType(othersRoleType), Direction.OUTGOING);
+            } else if (myRoleType == null && othersRoleType == null) {
+                desc = desc.evaluator(new AuxiliaryEvaluator());
+            } else {
+                throw new IllegalArgumentException("Both or none role types must be set");
+            }
             //
             for (Path path : desc.traverse(node)) {
                 // sanity check
@@ -191,38 +223,49 @@ class Neo4jBase {
 
     private class RoleTypeEvaluator implements Evaluator {
 
-        private Node node;
-
         private RelationshipType myRoleType;
         private RelationshipType othersRoleType;
 
-        private RoleTypeEvaluator(Node node, String myRoleType, String othersRoleType) {
-            this.node = node;
+        private RoleTypeEvaluator(String myRoleType, String othersRoleType) {
             this.myRoleType = getRelationshipType(myRoleType);
             this.othersRoleType = getRelationshipType(othersRoleType);
         }
 
         @Override
         public Evaluation evaluate(Path path) {
-            // sanity checks
+            boolean includes = true;
+            boolean continues = true;
             Relationship rel = path.lastRelationship();
+            Node node = path.endNode();
             if (path.length() == 1) {
-                if (!rel.isType(myRoleType)) {
-                    throw new RuntimeException("jri doesn't understand Neo4j traversal or your graph is corrupted");
-                }
-                if (rel.getEndNode().getId() != node.getId() || rel.getStartNode().getId() != path.endNode().getId()) {
-                    throw new RuntimeException("jri doesn't understand Neo4j traversal or your graph is corrupted");
+                if (!rel.isType(myRoleType) || rel.getStartNode().getId() != node.getId()) {
+                    continues = false;
                 }
             } else if (path.length() == 2) {
-                if (!rel.isType(othersRoleType)) {
-                    throw new RuntimeException("jri doesn't understand Neo4j traversal or your graph is corrupted");
+                if (!rel.isType(othersRoleType) || rel.getEndNode().getId() != node.getId()) {
+                    includes = false;
                 }
-                if (rel.getEndNode().getId() != path.endNode().getId()) {
+            }
+            //
+            includes = includes && path.length() == 2;
+            continues = continues && path.length() < 2;
+            return Evaluation.of(includes, continues);
+        }
+    }
+
+    private class AuxiliaryEvaluator implements Evaluator {
+
+        @Override
+        public Evaluation evaluate(Path path) {
+            Node node = path.endNode();
+            // sanity check
+            if (path.length() == 1) {
+                if (!isAuxiliaryNode(node)) {
                     throw new RuntimeException("jri doesn't understand Neo4j traversal or your graph is corrupted");
                 }
             }
             //
-            boolean includes = path.length() == 2;
+            boolean includes = path.length() == 2 && isAuxiliaryNode(node);
             boolean continues = path.length() < 2;
             return Evaluation.of(includes, continues);
         }

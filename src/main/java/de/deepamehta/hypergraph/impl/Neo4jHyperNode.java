@@ -142,27 +142,20 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
     // ---
 
     @Override
+    public Set<ConnectedHyperNode> getConnectedHyperNodes() {
+        return getConnectedHyperNodes(null, null);
+    }
+
+    // ---
+
+    @Override
     public ConnectedHyperNode getConnectedHyperNode(String myRoleType, String othersRoleType) {
-        Set<ConnectedHyperNode> nodes = getConnectedHyperNodes(myRoleType, othersRoleType);
-        switch (nodes.size()) {
-        case 0:
-            return null;
-        case 1:
-            return nodes.iterator().next();
-        default:
-            throw new RuntimeException("Ambiguity: there are " + nodes.size() + " connected nodes (" + this +
-                ", myRoleType=\"" + myRoleType + "\", othersRoleType=\"" + othersRoleType + "\")");
-        }
+        return super.getConnectedHyperNode(node, myRoleType, othersRoleType);
     }
 
     @Override
     public Set<ConnectedHyperNode> getConnectedHyperNodes(String myRoleType, String othersRoleType) {
-        return new TraveralResultBuilder(node, myRoleType, othersRoleType) {
-            @Override
-            Object buildResult(Node connectedNode, Node auxiliaryNode) {
-                return new ConnectedHyperNode(buildHyperNode(connectedNode), buildHyperEdge(auxiliaryNode));
-            }
-        }.getResult();
+        return super.getConnectedHyperNodes(node, myRoleType, othersRoleType);
     }
 
     // ---
@@ -181,7 +174,7 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
 
     @Override
     public String toString() {
-        return "hypernode " + node.getId() + " " + getAttributesString(node);
+        return "hyper node " + node.getId() + " " + getAttributesString(node);
     }
 
     // ----------------------------------------------------------------------------------------- Package Private Methods

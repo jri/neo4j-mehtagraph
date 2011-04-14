@@ -29,7 +29,7 @@ Version History
 
 **v0.1** -- Mar 8, 2011
 
-* Creating hypernodes and hyperedges
+* Creating hyper nodes and hyper edges
 * Basic traversal.
 
 

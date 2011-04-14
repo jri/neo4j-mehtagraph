@@ -34,6 +34,9 @@ public interface HyperEdge {
 
     // === Traversal ===
 
+    ConnectedHyperNode getConnectedHyperNode(String myRoleType, String othersRoleType);
+    Set<ConnectedHyperNode> getConnectedHyperNodes(String myRoleType, String othersRoleType);
+
     ConnectedHyperEdge getConnectedHyperEdge(String myRoleType, String othersRoleType);
     Set<ConnectedHyperEdge> getConnectedHyperEdges(String myRoleType, String othersRoleType);
 }

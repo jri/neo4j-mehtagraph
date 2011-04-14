@@ -25,4 +25,11 @@ public class HyperEdgeRole {
     public String getRoleType() {
         return roleType;
     }
+
+    // ---
+
+    @Override
+    public String toString() {
+        return "hyper edge role (" + hyperEdge + ", roleType=\"" + roleType + "\")";
+    }
 }
