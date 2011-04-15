@@ -265,7 +265,7 @@ class Neo4jBase {
                 }
             }
             //
-            boolean includes = path.length() == 2 && isAuxiliaryNode(node);
+            boolean includes = path.length() == 2 && !isAuxiliaryNode(node);
             boolean continues = path.length() < 2;
             return Evaluation.of(includes, continues);
         }
