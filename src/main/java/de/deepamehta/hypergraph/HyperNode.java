@@ -57,6 +57,7 @@ public interface HyperNode {
 
     // === Traversal ===
 
+    Set<HyperEdge> getHyperEdges();
     Set<HyperEdge> getHyperEdges(String myRoleType);
 
     Set<ConnectedHyperNode> getConnectedHyperNodes();
@@ -66,4 +67,8 @@ public interface HyperNode {
 
     ConnectedHyperEdge getConnectedHyperEdge(String myRoleType, String othersRoleType);
     Set<ConnectedHyperEdge> getConnectedHyperEdges(String myRoleType, String othersRoleType);
+
+    // === Deletion ===
+
+    void delete();
 }

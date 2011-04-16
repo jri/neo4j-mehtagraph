@@ -27,13 +27,14 @@ import java.util.logging.Logger;
 
 class Neo4jHyperNode extends Neo4jBase implements HyperNode {
 
-    // ------------------------------------------------------------------------------------------------------- Constants
-
     // ---------------------------------------------------------------------------------------------- Instance Variables
 
-    private final Logger logger = Logger.getLogger(getClass().getName());
-
+    /**
+     * The underlying Neo4j node.
+     */
     private Node node;
+
+    private final Logger logger = Logger.getLogger(getClass().getName());
 
     // ---------------------------------------------------------------------------------------------------- Constructors
 
@@ -130,13 +131,20 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
     // === Traversal ===
 
     @Override
+    public Set<HyperEdge> getHyperEdges() {
+        return getHyperEdges(null);
+    }
+
+    @Override
     public Set<HyperEdge> getHyperEdges(String myRoleType) {
-        Set edges = new HashSet();
-        for (Relationship rel : node.getRelationships(getRelationshipType(myRoleType), Direction.INCOMING)) {
-            Node auxiliaryNode = rel.getStartNode();
-            edges.add(buildHyperEdge(auxiliaryNode));
+        Iterable<Relationship> rels;
+        if (myRoleType == null) {
+            rels = node.getRelationships(Direction.INCOMING);
+        } else {
+            rels = node.getRelationships(getRelationshipType(myRoleType), Direction.INCOMING);
         }
-        return edges;
+        //
+        return buildHyperEdges(rels);
     }
 
     // ---
@@ -170,6 +178,13 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
         return super.getConnectedHyperEdges(node, myRoleType, othersRoleType);
     }
 
+    // === Deletion ===
+
+    @Override
+    public void delete() {
+        node.delete();
+    }
+
     // ---
 
     @Override
@@ -184,6 +199,15 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
     }
 
     // ------------------------------------------------------------------------------------------------- Private Methods
+
+    private Set<HyperEdge> buildHyperEdges(Iterable<Relationship> relationships) {
+        Set edges = new HashSet();
+        for (Relationship rel : relationships) {
+            Node auxiliaryNode = rel.getStartNode();
+            edges.add(buildHyperEdge(auxiliaryNode));
+        }
+        return edges;
+    }
 
     // === Indexing ===
 

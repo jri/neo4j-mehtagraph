@@ -31,9 +31,12 @@ class Neo4jHyperEdge extends Neo4jBase implements HyperEdge {
 
     // ---------------------------------------------------------------------------------------------- Instance Variables
 
-    private final Logger logger = Logger.getLogger(getClass().getName());
-
+    /**
+     * The underlying Neo4j node.
+     */
     private Node auxiliaryNode;
+
+    private final Logger logger = Logger.getLogger(getClass().getName());
 
     // ---------------------------------------------------------------------------------------------------- Constructors
 
@@ -61,7 +64,7 @@ class Neo4jHyperEdge extends Neo4jBase implements HyperEdge {
 
     @Override
     public void addHyperEdge(HyperEdge edge, String roleType) {
-        Node dstNode = ((Neo4jHyperEdge) edge).getNode();
+        Node dstNode = ((Neo4jHyperEdge) edge).getAuxiliaryNode();
         auxiliaryNode.createRelationshipTo(dstNode, getRelationshipType(roleType));
     }
 
@@ -143,6 +146,18 @@ class Neo4jHyperEdge extends Neo4jBase implements HyperEdge {
         return super.getConnectedHyperEdges(auxiliaryNode, myRoleType, othersRoleType);
     }
 
+    // === Deletion ===
+
+    @Override
+    public void delete() {
+        // delete all the node's relationships
+        for (Relationship rel : auxiliaryNode.getRelationships()) {
+            rel.delete();
+        }
+        //
+        auxiliaryNode.delete();
+    }
+
     // ---
 
     @Override
@@ -159,7 +174,7 @@ class Neo4jHyperEdge extends Neo4jBase implements HyperEdge {
 
     // ----------------------------------------------------------------------------------------- Package Private Methods
 
-    Node getNode() {
+    Node getAuxiliaryNode() {
         return auxiliaryNode;
     }
 

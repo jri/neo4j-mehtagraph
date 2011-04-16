@@ -39,4 +39,8 @@ public interface HyperEdge {
 
     ConnectedHyperEdge getConnectedHyperEdge(String myRoleType, String othersRoleType);
     Set<ConnectedHyperEdge> getConnectedHyperEdges(String myRoleType, String othersRoleType);
+
+    // === Deletion ===
+
+    void delete();
 }
