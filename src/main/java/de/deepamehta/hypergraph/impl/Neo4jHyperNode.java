@@ -158,24 +158,24 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
 
     @Override
     public ConnectedHyperNode getConnectedHyperNode(String myRoleType, String othersRoleType) {
-        return super.getConnectedHyperNode(node, myRoleType, othersRoleType);
+        return getConnectedHyperNode(node, myRoleType, othersRoleType);
     }
 
     @Override
     public Set<ConnectedHyperNode> getConnectedHyperNodes(String myRoleType, String othersRoleType) {
-        return super.getConnectedHyperNodes(node, myRoleType, othersRoleType);
+        return getConnectedHyperNodes(node, myRoleType, othersRoleType);
     }
 
     // ---
 
     @Override
     public ConnectedHyperEdge getConnectedHyperEdge(String myRoleType, String othersRoleType) {
-        return super.getConnectedHyperEdge(node, myRoleType, othersRoleType);
+        return getConnectedHyperEdge(node, myRoleType, othersRoleType);
     }
 
     @Override
     public Set<ConnectedHyperEdge> getConnectedHyperEdges(String myRoleType, String othersRoleType) {
-        return super.getConnectedHyperEdges(node, myRoleType, othersRoleType);
+        return getConnectedHyperEdges(node, myRoleType, othersRoleType);
     }
 
     // === Deletion ===

@@ -2,28 +2,31 @@ package de.deepamehta.hypergraph;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 
 public interface HyperGraph {
 
-    public HyperNode createHyperNode();
-    public HyperEdge createHyperEdge();
+    HyperNode createHyperNode();
+    HyperEdge createHyperEdge();
 
     // ---
 
-    public HyperNode getHyperNode(long id);
-    public HyperNode getHyperNode(String key, Object value);
+    HyperNode getHyperNode(long id);
+    HyperNode getHyperNode(String key, Object value);
 
-    public List<HyperNode> queryHyperNodes(Object value);
-    public List<HyperNode> queryHyperNodes(String key, Object value);
-
-    // ---
-
-    public HyperEdge getHyperEdge(long id);
+    List<HyperNode> queryHyperNodes(Object value);
+    List<HyperNode> queryHyperNodes(String key, Object value);
 
     // ---
 
-    public HyperGraphTransaction beginTx();
-    public void shutdown();
+    HyperEdge getHyperEdge(long id);
+
+    Set<HyperEdge> getHyperEdges(long node1Id, long node2Id);
+
+    // ---
+
+    HyperGraphTransaction beginTx();
+    void shutdown();
 }

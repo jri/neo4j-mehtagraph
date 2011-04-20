@@ -151,7 +151,7 @@ class Neo4jBase {
 
     protected final Set<ConnectedHyperNode> getConnectedHyperNodes(Node node, String myRoleType,
                                                                               String othersRoleType) {
-        return new TraveralResultBuilder(node, myRoleType, othersRoleType) {
+        return new TraveralResultBuilder(node, createTraversalDescription(myRoleType, othersRoleType)) {
             @Override
             Object buildResult(Node connectedNode, Node auxiliaryNode) {
                 return new ConnectedHyperNode(buildHyperNode(connectedNode), buildHyperEdge(auxiliaryNode));
@@ -176,7 +176,7 @@ class Neo4jBase {
 
     protected final Set<ConnectedHyperEdge> getConnectedHyperEdges(Node node, String myRoleType,
                                                                               String othersRoleType) {
-        return new TraveralResultBuilder(node, myRoleType, othersRoleType) {
+        return new TraveralResultBuilder(node, createTraversalDescription(myRoleType, othersRoleType)) {
             @Override
             Object buildResult(Node connectedNode, Node auxiliaryNode) {
                 return new ConnectedHyperEdge(buildHyperEdge(connectedNode), buildHyperEdge(auxiliaryNode));
@@ -186,22 +186,34 @@ class Neo4jBase {
 
     // ---
 
+    private TraversalDescription createTraversalDescription(String myRoleType, String othersRoleType) {
+        TraversalDescription desc = Traversal.description();
+        if (myRoleType != null && othersRoleType != null) {
+            desc = desc.evaluator(new RoleTypeEvaluator(myRoleType, othersRoleType));
+            desc = desc.relationships(getRelationshipType(myRoleType), Direction.INCOMING);
+            desc = desc.relationships(getRelationshipType(othersRoleType), Direction.OUTGOING);
+        } else if (myRoleType == null && othersRoleType == null) {
+            desc = desc.evaluator(new AuxiliaryEvaluator());
+        } else {
+            throw new IllegalArgumentException("Both or none role types must be set");
+        }
+        return desc;
+    }
+
+    protected final TraversalDescription createTraversalDescription(long connectedNodeId) {
+        TraversalDescription desc = Traversal.description();
+        desc = desc.evaluator(new AuxiliaryEvaluator());
+        desc = desc.evaluator(new ConnectedNodeEvaluator(connectedNodeId));
+        return desc;
+    }
+
+    // ---
+
     protected abstract class TraveralResultBuilder {
 
         private Set result = new HashSet();
 
-        protected TraveralResultBuilder(Node node, String myRoleType, String othersRoleType) {
-            TraversalDescription desc = Traversal.description();
-            if (myRoleType != null && othersRoleType != null) {
-                desc = desc.evaluator(new RoleTypeEvaluator(myRoleType, othersRoleType));
-                desc = desc.relationships(getRelationshipType(myRoleType), Direction.INCOMING);
-                desc = desc.relationships(getRelationshipType(othersRoleType), Direction.OUTGOING);
-            } else if (myRoleType == null && othersRoleType == null) {
-                desc = desc.evaluator(new AuxiliaryEvaluator());
-            } else {
-                throw new IllegalArgumentException("Both or none role types must be set");
-            }
-            //
+        protected TraveralResultBuilder(Node node, TraversalDescription desc) {
             for (Path path : desc.traverse(node)) {
                 // sanity check
                 if (path.length() != 2) {
@@ -267,6 +279,22 @@ class Neo4jBase {
             //
             boolean includes = path.length() == 2 && !isAuxiliaryNode(node);
             boolean continues = path.length() < 2;
+            return Evaluation.of(includes, continues);
+        }
+    }
+
+    private class ConnectedNodeEvaluator implements Evaluator {
+
+        private long connectedNodeId;
+
+        private ConnectedNodeEvaluator(long connectedNodeId) {
+            this.connectedNodeId = connectedNodeId;
+        }
+
+        @Override
+        public Evaluation evaluate(Path path) {
+            boolean includes = path.endNode().getId() == connectedNodeId;
+            boolean continues = true;
             return Evaluation.of(includes, continues);
         }
     }
