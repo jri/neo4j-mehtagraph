@@ -16,6 +16,8 @@ public interface HyperGraph {
     HyperNode getHyperNode(long id);
     HyperNode getHyperNode(String key, Object value);
 
+    // ---
+
     List<HyperNode> queryHyperNodes(Object value);
     List<HyperNode> queryHyperNodes(String key, Object value);
 

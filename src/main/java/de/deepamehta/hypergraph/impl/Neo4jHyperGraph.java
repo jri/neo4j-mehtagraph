@@ -108,11 +108,14 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
 
     @Override
     public List<HyperNode> queryHyperNodes(Object value) {
-        return queryHyperNodes(KEY_FULLTEXT, value);
+        return queryHyperNodes(null, value);
     }
 
     @Override
     public List<HyperNode> queryHyperNodes(String key, Object value) {
+        if (key == null) {
+            key = KEY_FULLTEXT;
+        }
         if (value == null) {
             throw new IllegalArgumentException("Tried to call queryHyperNodes() with a null value Object (key=\"" +
                 key + "\")");
