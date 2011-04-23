@@ -2,6 +2,6 @@ package de.deepamehta.hypergraph;
 
 
 
-public enum IndexMode {
+public enum HyperGraphIndexMode {
     OFF, KEY, FULLTEXT, FULLTEXT_KEY
 }

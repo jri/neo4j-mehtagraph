@@ -3,8 +3,8 @@ package de.deepamehta.hypergraph.impl;
 import de.deepamehta.hypergraph.ConnectedHyperEdge;
 import de.deepamehta.hypergraph.ConnectedHyperNode;
 import de.deepamehta.hypergraph.HyperEdge;
+import de.deepamehta.hypergraph.HyperGraphIndexMode;
 import de.deepamehta.hypergraph.HyperNode;
-import de.deepamehta.hypergraph.IndexMode;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Direction;
@@ -52,45 +52,47 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
         return node.getId();
     }
 
+
+
     // === Get Attributes ===
 
     @Override
     public String getString(String key) {
-        return (String) get(key);
+        return (String) getObject(key);
     }
 
     @Override
     public String getString(String key, String defaultValue) {
-        return (String) get(key, defaultValue);
+        return (String) getObject(key, defaultValue);
     }
 
     @Override
     public int getInteger(String key) {
-        return (Integer) get(key);
+        return (Integer) getObject(key);
     }
 
     @Override
     public int getInteger(String key, int defaultValue) {
-        return (Integer) get(key, defaultValue);
+        return (Integer) getObject(key, defaultValue);
     }
 
     @Override
     public boolean getBoolean(String key) {
-        return (Boolean) get(key);
+        return (Boolean) getObject(key);
     }
 
     @Override
     public boolean getBoolean(String key, boolean defaultValue) {
-        return (Boolean) get(key, defaultValue);
+        return (Boolean) getObject(key, defaultValue);
     }
 
     @Override
-    public Object get(String key) {
+    public Object getObject(String key) {
         return node.getProperty(key);
     }
 
     @Override
-    public Object get(String key, Object defaultValue) {
+    public Object getObject(String key, Object defaultValue) {
         return node.getProperty(key, defaultValue);
     }
 
@@ -101,32 +103,84 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
         return node.getPropertyKeys();
     }
 
-    // ---
-
     public boolean hasAttribute(String key) {
         return node.hasProperty(key);
     }
 
+
+
     // === Set Attributes ===
 
     @Override
-    public void setAttribute(String key, Object value) {
-        setAttribute(key, value, IndexMode.OFF);
+    public String setString(String key, String value) {
+        return (String) setObject(key, value);
     }
 
     @Override
-    public void setAttribute(String key, Object value, IndexMode indexMode) {
-        setAttribute(key, value, indexMode, key);
+    public Integer setInteger(String key, int value) {
+        return (Integer) setObject(key, value);
     }
 
     @Override
-    public void setAttribute(String key, Object value, IndexMode indexMode, String indexKey) {
-        Object oldValue = get(key, null);
-        // 1) update DB
+    public Boolean setBoolean(String key, boolean value) {
+        return (Boolean) setObject(key, value);
+    }
+
+    @Override
+    public Object setObject(String key, Object value) {
+        Object oldValue = getObject(key, null);
         node.setProperty(key, value);
-        // 2) update index
-        indexProperty(indexMode, indexKey, value, oldValue);
+        return oldValue;
     }
+
+
+
+    // === Indexing ===
+
+    @Override
+    public void indexAttribute(HyperGraphIndexMode indexMode, Object value, Object oldValue) {
+        indexAttribute(indexMode, null, value, oldValue);
+    }
+
+    @Override
+    public void indexAttribute(HyperGraphIndexMode indexMode, String indexKey, Object value, Object oldValue) {
+        if (indexMode == HyperGraphIndexMode.OFF) {
+            return;
+        } else if (indexMode == HyperGraphIndexMode.KEY) {
+            if (oldValue != null) {
+                // FIXME: new index API doesn't work with OSGi
+                // exactIndex.remove(node, indexKey, oldValue);             // remove old
+                exactIndex.removeIndex(node, indexKey, oldValue);           // remove old
+            }
+            // FIXME: new index API doesn't work with OSGi
+            // exactIndex.add(node, indexKey, value);                       // index new
+            exactIndex.index(node, indexKey, value);                        // index new
+        } else if (indexMode == HyperGraphIndexMode.FULLTEXT) {
+            // Note: all the topic's FULLTEXT properties are indexed under the same key ("default").
+            // So, when removing from index we must explicitley give the old value.
+            if (oldValue != null) {
+                // FIXME: new index API doesn't work with OSGi
+                // fulltextIndex.remove(node, KEY_FULLTEXT, oldValue);      // remove old
+                fulltextIndex.removeIndex(node, KEY_FULLTEXT, oldValue);    // remove old
+            }
+            // FIXME: new index API doesn't work with OSGi
+            // fulltextIndex.add(node, KEY_FULLTEXT, value);                // index new
+            fulltextIndex.index(node, KEY_FULLTEXT, value);                 // index new
+        } else if (indexMode == HyperGraphIndexMode.FULLTEXT_KEY) {
+            if (oldValue != null) {
+                // FIXME: new index API doesn't work with OSGi
+                // fulltextIndex.remove(node, indexKey, oldValue);          // remove old
+                fulltextIndex.removeIndex(node, indexKey, oldValue);        // remove old
+            }
+            // FIXME: new index API doesn't work with OSGi
+            // fulltextIndex.add(node, indexKey, value);                    // index new
+            fulltextIndex.index(node, indexKey, value);                     // index new
+        } else {
+            throw new RuntimeException("Index mode \"" + indexMode + "\" not implemented");
+        }
+    }
+
+
 
     // === Traversal ===
 
@@ -178,6 +232,8 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
         return getConnectedHyperEdges(node, myRoleType, othersRoleType);
     }
 
+
+
     // === Deletion ===
 
     @Override
@@ -192,11 +248,15 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
         return "hyper node " + node.getId() + " " + getAttributesString(node);
     }
 
+
+
     // ----------------------------------------------------------------------------------------- Package Private Methods
 
     Node getNode() {
         return node;
     }
+
+
 
     // ------------------------------------------------------------------------------------------------- Private Methods
 
@@ -207,44 +267,5 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
             edges.add(buildHyperEdge(auxiliaryNode));
         }
         return edges;
-    }
-
-    // === Indexing ===
-
-    private void indexProperty(IndexMode indexMode, String indexKey, Object value, Object oldValue) {
-        if (indexMode == IndexMode.OFF) {
-            return;
-        } else if (indexMode == IndexMode.KEY) {
-            if (oldValue != null) {
-                // FIXME: new index API doesn't work with OSGi
-                // exactIndex.remove(node, indexKey, oldValue);             // remove old
-                exactIndex.removeIndex(node, indexKey, oldValue);           // remove old
-            }
-            // FIXME: new index API doesn't work with OSGi
-            // exactIndex.add(node, indexKey, value);                       // index new
-            exactIndex.index(node, indexKey, value);                        // index new
-        } else if (indexMode == IndexMode.FULLTEXT) {
-            // Note: all the topic's FULLTEXT properties are indexed under the same key ("default").
-            // So, when removing from index we must explicitley give the old value.
-            if (oldValue != null) {
-                // FIXME: new index API doesn't work with OSGi
-                // fulltextIndex.remove(node, KEY_FULLTEXT, oldValue);      // remove old
-                fulltextIndex.removeIndex(node, KEY_FULLTEXT, oldValue);    // remove old
-            }
-            // FIXME: new index API doesn't work with OSGi
-            // fulltextIndex.add(node, KEY_FULLTEXT, value);                // index new
-            fulltextIndex.index(node, KEY_FULLTEXT, value);                 // index new
-        } else if (indexMode == IndexMode.FULLTEXT_KEY) {
-            if (oldValue != null) {
-                // FIXME: new index API doesn't work with OSGi
-                // fulltextIndex.remove(node, indexKey, oldValue);          // remove old
-                fulltextIndex.removeIndex(node, indexKey, oldValue);        // remove old
-            }
-            // FIXME: new index API doesn't work with OSGi
-            // fulltextIndex.add(node, indexKey, value);                    // index new
-            fulltextIndex.index(node, indexKey, value);                     // index new
-        } else {
-            throw new RuntimeException("Index mode \"" + indexMode + "\" not implemented");
-        }
     }
 }

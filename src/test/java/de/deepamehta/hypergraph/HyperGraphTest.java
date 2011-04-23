@@ -75,26 +75,31 @@ public class HyperGraphTest {
         HyperGraphTransaction tx = hg.beginTx();
         try {
             HyperNode node1 = hg.createHyperNode();
-            node1.setAttribute("uri", "dm3.core.topic_type", IndexMode.KEY);
-            node1.setAttribute("value", "Topic Type");
+            node1.setString("uri", "dm3.core.topic_type");
+            node1.setString("value", "Topic Type");
+            node1.indexAttribute(HyperGraphIndexMode.KEY, "uri", "dm3.core.topic_type", null);
             //
             HyperNode node2 = hg.createHyperNode();
-            node2.setAttribute("uri", "dm3.core.data_type", IndexMode.KEY);
-            node2.setAttribute("value", "Data Type", IndexMode.KEY, "dm3.core.topic_type");
+            node2.setString("uri", "dm3.core.data_type");
+            node2.setString("value", "Data Type");
+            node2.indexAttribute(HyperGraphIndexMode.KEY, "uri", "dm3.core.data_type", null);
             //
             HyperEdge edge = hg.createHyperEdge();
             edge.addHyperNode(node1, "dm3.core.type");
             edge.addHyperNode(node2, "dm3.core.instance");
             //
+            String text1 = "DeepaMehta is a platform for collaboration and knowledge management";
+            String text2 = "Lead developer of DeepaMehta is Jörg Richter";
+            //
             HyperNode node3 = hg.createHyperNode();
-            node3.setAttribute("uri", "note-1", IndexMode.KEY);
-            node3.setAttribute("value", "DeepaMehta is a platform for collaboration and knowledge management",
-                IndexMode.FULLTEXT, "dm3.notes.text");
+            node3.setString("uri", "note-1");
+            node3.setString("value", text1);
+            node3.indexAttribute(HyperGraphIndexMode.FULLTEXT, text1, null);
             //
             HyperNode node4 = hg.createHyperNode();
-            node4.setAttribute("uri", "note-2", IndexMode.KEY);
-            node4.setAttribute("value", "Lead developer of DeepaMehta is Jörg Richter",
-                IndexMode.FULLTEXT, "dm3.workspaces.description");
+            node4.setString("uri", "note-2");
+            node4.setString("value", text2);
+            node4.indexAttribute(HyperGraphIndexMode.FULLTEXT, text2, null);
             //
             tx.success();
         } finally {

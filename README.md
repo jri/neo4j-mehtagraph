@@ -2,7 +2,7 @@
 Neo4j Hypergraph
 ================
 
-A persistence layer for hypergraphs on-top of [Neo4j](http://neo4j.org). In mathematics, a [hypergraph](http://en.wikipedia.org/wiki/Hypergraph) is a generalization of a graph, where an edge can connect any number of nodes (not only two). In this implementation nodes and edges are attributed. The role a node occupies in an edge is modeled as *role type*.
+A persistence layer for hypergraphs on-top of [Neo4j](http://neo4j.org/). In mathematics, a [hypergraph](http://en.wikipedia.org/wiki/Hypergraph) is a generalization of a graph, where an edge can connect any number of nodes (not only two). In this implementation nodes and edges are attributed. The role a node occupies in an edge is modeled as *role type*.
 
 **This implementation goes beyond hypergraphs:** An edge can not only connect nodes, but other edges as well! (So, *Neo4j Hypergraph* is not quite an accurate name.)
 
