@@ -6,7 +6,6 @@ import de.deepamehta.hypergraph.HyperNode;
 import de.deepamehta.hypergraph.HyperEdge;
 
 import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.DynamicRelationshipType;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Path;
@@ -47,6 +46,7 @@ class Neo4jBase {
     private final Logger logger = Logger.getLogger(getClass().getName());
 
     protected GraphDatabaseService neo4j;
+    protected Neo4jRelationtypeCache relTypeCache;
     // FIXME: new index API doesn't work with OSGi
     // protected Index<Node> exactIndex;
     // protected Index<Node> fulltextIndex;
@@ -61,10 +61,11 @@ class Neo4jBase {
         this.neo4j = neo4j;
     }
 
-    protected Neo4jBase(GraphDatabaseService neo4j, IndexService exactIndex,
-                        LuceneFulltextQueryIndexService fulltextIndex
+    protected Neo4jBase(GraphDatabaseService neo4j, Neo4jRelationtypeCache relTypeCache,
+                        IndexService exactIndex, LuceneFulltextQueryIndexService fulltextIndex
                         /* FIXME: Index exactIndex, Index fulltextIndex */) {
         this.neo4j = neo4j;
+        this.relTypeCache = relTypeCache;
         this.exactIndex = exactIndex;
         this.fulltextIndex = fulltextIndex;
     }
@@ -78,7 +79,7 @@ class Neo4jBase {
         if (isAuxiliaryNode(node)) {
             throw new IllegalArgumentException("ID " + node.getId() + " refers not to a HyperNode but to a HyperEdge");
         }
-        return new Neo4jHyperNode(node, neo4j, exactIndex, fulltextIndex);
+        return new Neo4jHyperNode(node, neo4j, relTypeCache, exactIndex, fulltextIndex);
     }
 
     protected final HyperEdge buildHyperEdge(Node auxiliaryNode) {
@@ -89,7 +90,7 @@ class Neo4jBase {
             throw new IllegalArgumentException("ID " + auxiliaryNode.getId() + " refers not to a HyperEdge but to " +
                 "a HyperNode");
         }
-        return new Neo4jHyperEdge(auxiliaryNode, neo4j, exactIndex, fulltextIndex);
+        return new Neo4jHyperEdge(auxiliaryNode, neo4j, relTypeCache, exactIndex, fulltextIndex);
     }
 
     // ---
@@ -123,15 +124,7 @@ class Neo4jBase {
     }
 
     protected final RelationshipType getRelationshipType(String typeName) {
-        // search through dynamic types
-        for (RelationshipType relType : neo4j.getRelationshipTypes()) {
-            if (relType.name().equals(typeName)) {
-                return relType;
-            }
-        }
-        // fallback: create new type
-        logger.info("### Relation type \"" + typeName + "\" does not exist -- Creating it dynamically");
-        return DynamicRelationshipType.withName(typeName);
+        return relTypeCache.get(typeName);
     }
 
     // === Traversal ===

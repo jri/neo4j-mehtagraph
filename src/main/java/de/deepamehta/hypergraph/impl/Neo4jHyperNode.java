@@ -38,10 +38,10 @@ class Neo4jHyperNode extends Neo4jBase implements HyperNode {
 
     // ---------------------------------------------------------------------------------------------------- Constructors
 
-    Neo4jHyperNode(Node node, GraphDatabaseService neo4j, IndexService exactIndex,
-                        LuceneFulltextQueryIndexService fulltextIndex
-                        /* FIXME: Index exactIndex, Index fulltextIndex */) {
-        super(neo4j, exactIndex, fulltextIndex);
+    Neo4jHyperNode(Node node, GraphDatabaseService neo4j, Neo4jRelationtypeCache relTypeCache,
+                   IndexService exactIndex, LuceneFulltextQueryIndexService fulltextIndex
+                   /* FIXME: Index exactIndex, Index fulltextIndex */) {
+        super(neo4j, relTypeCache, exactIndex, fulltextIndex);
         this.node = node;
     }
 

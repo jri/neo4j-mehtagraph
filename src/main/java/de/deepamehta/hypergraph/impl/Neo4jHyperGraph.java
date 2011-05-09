@@ -5,39 +5,17 @@ import de.deepamehta.hypergraph.HyperGraph;
 import de.deepamehta.hypergraph.HyperNode;
 import de.deepamehta.hypergraph.HyperGraphTransaction;
 
-import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.DynamicRelationshipType;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Path;
-import org.neo4j.graphdb.PropertyContainer;
-import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.RelationshipType;
-import org.neo4j.graphdb.ReturnableEvaluator;
-import org.neo4j.graphdb.StopEvaluator;
-import org.neo4j.graphdb.TraversalPosition;
-import org.neo4j.graphdb.Traverser.Order;
 // FIXME: new index API doesn't work with OSGi
 // import org.neo4j.graphdb.index.Index;
-import org.neo4j.graphdb.traversal.PruneEvaluator;
-import org.neo4j.graphdb.traversal.TraversalDescription;
-import org.neo4j.graphdb.traversal.Traverser;
-import org.neo4j.helpers.Predicate;
-import org.neo4j.helpers.collection.MapUtil;
-import org.neo4j.kernel.EmbeddedGraphDatabase;
-import org.neo4j.kernel.Traversal;
+// import org.neo4j.helpers.collection.MapUtil;
 // Using old index API instead
-import org.neo4j.index.IndexHits;
-import org.neo4j.index.IndexService;
 import org.neo4j.index.lucene.LuceneIndexService;
 import org.neo4j.index.lucene.LuceneFulltextQueryIndexService;
 
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,6 +33,7 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
 
     public Neo4jHyperGraph(GraphDatabaseService neo4j) {
         super(neo4j);
+        this.relTypeCache = new Neo4jRelationtypeCache(neo4j);
         try {
             /* FIXME: new index API doesn't work with OSGi
             // access/create indexes
@@ -159,6 +138,4 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
         logger.info("Shutdown DB");
         neo4j.shutdown();
     }
-
-    // ------------------------------------------------------------------------------------------------- Private Methods
 }

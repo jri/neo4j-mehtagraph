@@ -40,10 +40,10 @@ class Neo4jHyperEdge extends Neo4jBase implements HyperEdge {
 
     // ---------------------------------------------------------------------------------------------------- Constructors
 
-    Neo4jHyperEdge(Node auxiliaryNode, GraphDatabaseService neo4j, IndexService exactIndex,
-                        LuceneFulltextQueryIndexService fulltextIndex
-                        /* FIXME: Index exactIndex, Index fulltextIndex */) {
-        super(neo4j, exactIndex, fulltextIndex);
+    Neo4jHyperEdge(Node auxiliaryNode, GraphDatabaseService neo4j, Neo4jRelationtypeCache relTypeCache,
+                   IndexService exactIndex, LuceneFulltextQueryIndexService fulltextIndex
+                   /* FIXME: Index exactIndex, Index fulltextIndex */) {
+        super(neo4j, relTypeCache, exactIndex, fulltextIndex);
         this.auxiliaryNode = auxiliaryNode;
     }
 
