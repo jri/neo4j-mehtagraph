@@ -18,6 +18,11 @@ Is a graph where an edge can link to other edges a known structure? What's its n
 Version History
 ---------------
 
+**v0.5** -- May 15, 2011
+
+* Relationship type cache
+* API changes, e.g. setting attributes decoupled from indexing
+
 **v0.4** -- Apr 23, 2011
 
 * More traversal, especially edge-connected edges
@@ -41,4 +46,4 @@ Version History
 
 ------------
 Jörg Richter  
-Apr 23, 2011
+May 15, 2011

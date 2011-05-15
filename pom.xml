@@ -4,10 +4,10 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <name>Neo4j Hypergraph</name>
+    <name>Neo4j - Hypergraph</name>
     <groupId>de.deepamehta</groupId>
     <artifactId>neo4j-hypergraph</artifactId>
-    <version>0.5-SNAPSHOT</version>
+    <version>0.5</version>
     <packaging>bundle</packaging>
 
     <properties>
