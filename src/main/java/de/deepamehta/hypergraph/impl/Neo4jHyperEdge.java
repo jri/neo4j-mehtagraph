@@ -57,24 +57,9 @@ class Neo4jHyperEdge extends Neo4jBase implements HyperEdge {
     // ---
 
     @Override
-    public void addHyperNode(HyperNode node, String roleType) {
-        Node dstNode = ((Neo4jHyperNode) node).getNode();
-        auxiliaryNode.createRelationshipTo(dstNode, getRelationshipType(roleType));
-    }
-
-    @Override
-    public void addHyperEdge(HyperEdge edge, String roleType) {
-        Node dstNode = ((Neo4jHyperEdge) edge).getAuxiliaryNode();
-        auxiliaryNode.createRelationshipTo(dstNode, getRelationshipType(roleType));
-    }
-
-    // ---
-
-    @Override
     public HyperNode getHyperNode(String roleType) {
         Relationship rel = auxiliaryNode.getSingleRelationship(getRelationshipType(roleType), Direction.OUTGOING);
         if (rel == null) return null;
-        // FIXME: check if end node is really an HyperNode (and not an HyperEdge)
         return buildHyperNode(rel.getEndNode());
     }
 
@@ -173,6 +158,18 @@ class Neo4jHyperEdge extends Neo4jBase implements HyperEdge {
     }
 
     // ----------------------------------------------------------------------------------------- Package Private Methods
+
+    void addHyperNode(HyperNode node, String roleType) {
+        Node dstNode = ((Neo4jHyperNode) node).getNode();
+        auxiliaryNode.createRelationshipTo(dstNode, getRelationshipType(roleType));
+    }
+
+    void addHyperEdge(HyperEdge edge, String roleType) {
+        Node dstNode = ((Neo4jHyperEdge) edge).getAuxiliaryNode();
+        auxiliaryNode.createRelationshipTo(dstNode, getRelationshipType(roleType));
+    }
+
+    // ---
 
     Node getAuxiliaryNode() {
         return auxiliaryNode;

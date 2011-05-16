@@ -84,9 +84,7 @@ public class HyperGraphTest {
             node2.setString("value", "Data Type");
             node2.indexAttribute(HyperGraphIndexMode.KEY, "uri", "dm3.core.data_type", null);
             //
-            HyperEdge edge = hg.createHyperEdge();
-            edge.addHyperNode(node1, "dm3.core.type");
-            edge.addHyperNode(node2, "dm3.core.instance");
+            HyperEdge edge = hg.createHyperEdge(node1, "dm3.core.type", node2, "dm3.core.instance");
             //
             String text1 = "DeepaMehta is a platform for collaboration and knowledge management";
             String text2 = "Lead developer of DeepaMehta is Jörg Richter";

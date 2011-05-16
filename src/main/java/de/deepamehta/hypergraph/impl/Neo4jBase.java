@@ -72,7 +72,7 @@ class Neo4jBase {
 
     // ----------------------------------------------------------------------------------------------- Protected Methods
 
-    protected final HyperNode buildHyperNode(Node node) {
+    protected final Neo4jHyperNode buildHyperNode(Node node) {
         if (node == null) {
             throw new IllegalArgumentException("Tried to build a HyperNode from a null Node");
         }
@@ -82,7 +82,7 @@ class Neo4jBase {
         return new Neo4jHyperNode(node, neo4j, relTypeCache, exactIndex, fulltextIndex);
     }
 
-    protected final HyperEdge buildHyperEdge(Node auxiliaryNode) {
+    protected final Neo4jHyperEdge buildHyperEdge(Node auxiliaryNode) {
         if (auxiliaryNode == null) {
             throw new IllegalArgumentException("Tried to build a HyperEdge from a null auxiliary Node");
         }

@@ -9,7 +9,10 @@ import java.util.Set;
 public interface HyperGraph {
 
     HyperNode createHyperNode();
-    HyperEdge createHyperEdge();
+
+    HyperEdge createHyperEdge(HyperNode node1, String roleType1, HyperNode node2, String roleType2);
+    HyperEdge createHyperEdge(HyperNode node,  String roleType1, HyperEdge edge,  String roleType2);
+    HyperEdge createHyperEdge(HyperEdge edge1, String roleType1, HyperEdge edge2, String roleType2);
 
     // ---
 
