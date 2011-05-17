@@ -2,24 +2,24 @@ package de.deepamehta.hypergraph;
 
 
 
-public class HyperEdgeRole {
+public class HyperObjectRole {
 
     // ---------------------------------------------------------------------------------------------- Instance Variables
 
-    private HyperEdge hyperEdge;
+    private HyperObject hyperObject;
     private String roleType;
 
     // ---------------------------------------------------------------------------------------------------- Constructors
 
-    public HyperEdgeRole(HyperEdge hyperEdge, String roleType) {
-        this.hyperEdge = hyperEdge;
+    public HyperObjectRole(HyperObject hyperObject, String roleType) {
+        this.hyperObject = hyperObject;
         this.roleType = roleType;
     }
 
     // -------------------------------------------------------------------------------------------------- Public Methods
 
-    public HyperEdge getHyperEdge() {
-        return hyperEdge;
+    public HyperObject getHyperObject() {
+        return hyperObject;
     }
 
     public String getRoleType() {
@@ -30,6 +30,6 @@ public class HyperEdgeRole {
 
     @Override
     public String toString() {
-        return "hyper edge role (" + hyperEdge + ", roleType=\"" + roleType + "\")";
+        return "hyper object role (" + hyperObject + ", roleType=\"" + roleType + "\")";
     }
 }

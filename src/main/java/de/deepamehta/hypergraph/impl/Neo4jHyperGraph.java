@@ -1,10 +1,9 @@
 package de.deepamehta.hypergraph.impl;
 
 import de.deepamehta.hypergraph.HyperEdge;
-import de.deepamehta.hypergraph.HyperEdgeRole;
 import de.deepamehta.hypergraph.HyperGraph;
 import de.deepamehta.hypergraph.HyperNode;
-import de.deepamehta.hypergraph.HyperNodeRole;
+import de.deepamehta.hypergraph.HyperObjectRole;
 import de.deepamehta.hypergraph.HyperGraphTransaction;
 
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -55,34 +54,20 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
 
     // -------------------------------------------------------------------------------------------------- Public Methods
 
+
+
+    // === HyperGraph Implementation ===
+
     @Override
     public HyperNode createHyperNode() {
         return buildHyperNode(neo4j.createNode());
     }
 
-    // ---
-
     @Override
-    public HyperEdge createHyperEdge(HyperNode node1, String roleType1, HyperNode node2, String roleType2) {
+    public HyperEdge createHyperEdge(HyperObjectRole object1, HyperObjectRole object2) {
         Neo4jHyperEdge hyperEdge = createHyperEdge();
-        hyperEdge.addHyperNode(node1, roleType1);
-        hyperEdge.addHyperNode(node2, roleType2);
-        return hyperEdge;
-    }
-
-    @Override
-    public HyperEdge createHyperEdge(HyperNode node, String roleType1, HyperEdge edge, String roleType2) {
-        Neo4jHyperEdge hyperEdge = createHyperEdge();
-        hyperEdge.addHyperNode(node, roleType1);
-        hyperEdge.addHyperEdge(edge, roleType2);
-        return hyperEdge;
-    }
-
-    @Override
-    public HyperEdge createHyperEdge(HyperEdge edge1, String roleType1, HyperEdge edge2, String roleType2) {
-        Neo4jHyperEdge hyperEdge = createHyperEdge();
-        hyperEdge.addHyperEdge(edge1, roleType1);
-        hyperEdge.addHyperEdge(edge2, roleType2);
+        hyperEdge.addHyperObject(object1);
+        hyperEdge.addHyperObject(object2);
         return hyperEdge;
     }
 
@@ -105,6 +90,8 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
         Node node = exactIndex.getSingleNode(key, value);
         return node != null ? buildHyperNode(node) : null;
     }
+
+    // ---
 
     @Override
     public List<HyperNode> queryHyperNodes(Object value) {
@@ -159,6 +146,8 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
         logger.info("Shutdown DB");
         neo4j.shutdown();
     }
+
+
 
     // ------------------------------------------------------------------------------------------------- Private Methods
 
