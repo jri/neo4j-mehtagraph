@@ -22,8 +22,14 @@ public class HyperObjectRole {
         return hyperObject;
     }
 
+    // ---
+
     public String getRoleType() {
         return roleType;
+    }
+
+    public void setRoleType(String roleType) {
+        this.roleType = roleType;
     }
 
     // ---

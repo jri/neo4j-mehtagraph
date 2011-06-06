@@ -100,7 +100,9 @@ class Neo4jBase {
         return (Boolean) node.getProperty(KEY_IS_HYPER_EDGE, false);
     }
 
-    // ---
+
+
+    // === Traversal ===
 
     protected final TraversalDescription createTraversalDescription(long connectedNodeId) {
         TraversalDescription desc = Traversal.description();

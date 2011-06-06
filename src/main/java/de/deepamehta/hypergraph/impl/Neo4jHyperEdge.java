@@ -39,9 +39,34 @@ class Neo4jHyperEdge extends Neo4jHyperObject implements HyperEdge {
             Node node = rel.getEndNode();
             String roleType = rel.getType().name();
             HyperObject hyperObject = buildHyperObject(node);
-            hyperObjects.add(new HyperObjectRole(hyperObject, roleType));
+            hyperObjects.add(new Neo4jHyperObjectRole(hyperObject, roleType, rel));
         }
+        // sanity check
+        if (hyperObjects.size() != 2) {
+            throw new RuntimeException("Graph inconsistency: hyper edge connects " +
+                hyperObjects.size() + " hyper objects instead of 2 (" + this + ")");
+        }
+        //
         return hyperObjects;
+    }
+
+    @Override
+    public HyperObjectRole getHyperObject(long objectId) {
+        List<HyperObjectRole> roles = getHyperObjects();
+        long id1 = roles.get(0).getHyperObject().getId();
+        long id2 = roles.get(1).getHyperObject().getId();
+        //
+        if (id1 == objectId && id2 == objectId) {
+            throw new RuntimeException("Self-connected hyper objects are not supported (" + this + ")");
+        }
+        //
+        if (id1 == objectId) {
+            return roles.get(0);
+        } else if (id2 == objectId) {
+            return roles.get(1);
+        } else {
+            throw new RuntimeException("Hyper object " + objectId + " plays no role in " + this);
+        }
     }
 
     @Override
@@ -51,7 +76,9 @@ class Neo4jHyperEdge extends Neo4jHyperObject implements HyperEdge {
         return buildHyperObject(rel.getEndNode());
     }
 
-    // --- Deletion ---
+
+
+    // === HyperObject Overrides ===
 
     @Override
     public void delete() {

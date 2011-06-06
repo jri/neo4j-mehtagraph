@@ -8,7 +8,9 @@ public interface HyperObject {
 
     long getId();
 
-    // --- Get Attributes ---
+
+
+    // === Get Attributes ===
 
     /**
      * @throws  Exception    if node has no attribute with that key
@@ -40,7 +42,9 @@ public interface HyperObject {
 
     boolean hasAttribute(String key);
 
-    // --- Set Attributes ---
+
+
+    // === Set Attributes ===
 
     /**
      * @throws  IllegalArgumentException    if value is null
@@ -56,12 +60,23 @@ public interface HyperObject {
      */
     Object setObject(String key, Object value);
 
-    // --- Indexing ---
 
+
+    // === Indexing ===
+
+    /**
+     * @param   oldValue    The value to remove from index. If <code>null</code> no removal is performed.
+     */
     void indexAttribute(HyperGraphIndexMode indexMode, Object value, Object oldValue);
+
+    /**
+     * @param   oldValue    The value to remove from index. If <code>null</code> no removal is performed.
+     */
     void indexAttribute(HyperGraphIndexMode indexMode, String indexKey, Object value, Object oldValue);
 
-    // --- Traversal ---
+
+
+    // === Traversal ===
 
     /**
      * @param   myRoleType      Pass <code>null</code> to switch role type filter off.
@@ -96,7 +111,9 @@ public interface HyperObject {
      */
     Set<ConnectedHyperEdge> getConnectedHyperEdges(String myRoleType, String othersRoleType);
 
-    // --- Deletion ---
+
+
+    // === Deletion ===
 
     void delete();
 }
