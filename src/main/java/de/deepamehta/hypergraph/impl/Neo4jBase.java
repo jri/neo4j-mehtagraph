@@ -15,6 +15,7 @@ import org.neo4j.graphdb.traversal.TraversalDescription;
 import org.neo4j.index.IndexService;
 import org.neo4j.index.lucene.LuceneFulltextQueryIndexService;
 import org.neo4j.kernel.Traversal;
+import org.neo4j.kernel.Uniqueness;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -104,11 +105,19 @@ class Neo4jBase {
 
     // === Traversal ===
 
+    /**
+     * The created traversal description allows to find all hyper edges between two hyper nodes.
+     * <p>
+     * Called from {@link Neo4jHyperGraph#getHyperEdges}
+     */
     protected final TraversalDescription createTraversalDescription(long connectedNodeId) {
-        TraversalDescription desc = Traversal.description();
-        desc = desc.evaluator(new AuxiliaryEvaluator());
-        desc = desc.evaluator(new ConnectedNodeEvaluator(connectedNodeId));
-        return desc;
+        return Traversal.description()
+            .evaluator(new AuxiliaryEvaluator())
+            .evaluator(new ConnectedNodeEvaluator(connectedNodeId))
+            .uniqueness(Uniqueness.RELATIONSHIP_GLOBAL);
+        // Note: we need to traverse a node more than once. Consider this case: hyper node A
+        // is connected with hyper node B via hyper edge C and A is connected to C as well.
+        // (default uniqueness is not RELATIONSHIP_GLOBAL, but probably NODE_GLOBAL).
     }
 
     // ---

@@ -16,6 +16,7 @@ import org.neo4j.graphdb.traversal.Evaluation;
 import org.neo4j.graphdb.traversal.Evaluator;
 import org.neo4j.graphdb.traversal.TraversalDescription;
 import org.neo4j.kernel.Traversal;
+import org.neo4j.kernel.Uniqueness;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -282,18 +283,30 @@ class Neo4jHyperObject extends Neo4jBase implements HyperObject {
 
     // === Traversal ===
 
+    /**
+     * The created traversal description allows to find connected hyper nodes/hyper edges that
+     * are connected to the start node/edge via the given role types.
+     * <p>
+     * Called from {@link #getConnectedHyperNodes} and {@link #getConnectedHyperEdges}
+     *
+     * @param   myRoleType      Pass <code>null</code> to switch role type filter off.
+     * @param   othersRoleType  Pass <code>null</code> to switch role type filter off.
+     */
     private TraversalDescription createTraversalDescription(String myRoleType, String othersRoleType) {
-        TraversalDescription desc = Traversal.description();
+        TraversalDescription desc = Traversal.description().uniqueness(Uniqueness.RELATIONSHIP_GLOBAL);
+        // Note: we need to traverse a node more than once. Consider this case: hyper node A
+        // is connected with hyper node B via hyper edge C and A is connected to C as well.
+        // (default uniqueness is not RELATIONSHIP_GLOBAL, but probably NODE_GLOBAL).
         if (myRoleType != null && othersRoleType != null) {
-            desc = desc.evaluator(new RoleTypeEvaluator(myRoleType, othersRoleType));
-            desc = desc.relationships(getRelationshipType(myRoleType), Direction.INCOMING);
-            desc = desc.relationships(getRelationshipType(othersRoleType), Direction.OUTGOING);
+            return desc.evaluator(new RoleTypeEvaluator(myRoleType, othersRoleType))
+                       .relationships(getRelationshipType(myRoleType), Direction.INCOMING)
+                       .relationships(getRelationshipType(othersRoleType), Direction.OUTGOING);
         } else if (myRoleType == null && othersRoleType == null) {
-            desc = desc.evaluator(new AuxiliaryEvaluator());
+            // FIXME: with role type filter switched off only node-to-node traversal is currently supported.
+            return desc.evaluator(new AuxiliaryEvaluator());
         } else {
             throw new IllegalArgumentException("Both or none role types must be set");
         }
-        return desc;
     }
 
     private class RoleTypeEvaluator implements Evaluator {
