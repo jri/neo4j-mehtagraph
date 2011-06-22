@@ -43,8 +43,10 @@ class Neo4jHyperEdge extends Neo4jHyperObject implements HyperEdge {
         }
         // sanity check
         if (hyperObjects.size() != 2) {
-            throw new RuntimeException("Graph inconsistency: hyper edge connects " +
-                hyperObjects.size() + " hyper objects instead of 2 (" + this + ")");
+            // Note: custom toString() stringifier called here to avoid endless recursion.
+            // The default stringifier would call getHyperObjects() again and fail endlessly.
+            throw new RuntimeException("Graph inconsistency: hyper edge " + getId() + " connects " +
+                hyperObjects.size() + " hyper objects instead of 2 (" + toString(hyperObjects) + ")");
         }
         //
         return hyperObjects;
@@ -83,6 +85,7 @@ class Neo4jHyperEdge extends Neo4jHyperObject implements HyperEdge {
     @Override
     public void delete() {
         // delete all the node's relationships
+        // FIXME: hyper edges connected with this edge gets truncated
         for (Relationship rel : node.getRelationships()) {
             rel.delete();
         }
@@ -96,11 +99,7 @@ class Neo4jHyperEdge extends Neo4jHyperObject implements HyperEdge {
 
     @Override
     public String toString() {
-        StringBuilder str = new StringBuilder("hyper edge " + node.getId());
-        List<HyperObjectRole> hyperObjects = getHyperObjects();
-        str.append("\n        " + hyperObjects.get(0));
-        str.append("\n        " + hyperObjects.get(1));
-        return str.toString();
+        return toString(getHyperObjects());
     }
 
 
@@ -110,5 +109,18 @@ class Neo4jHyperEdge extends Neo4jHyperObject implements HyperEdge {
     void addHyperObject(HyperObjectRole object) {
         Node dstNode = ((Neo4jHyperObject) object.getHyperObject()).getNode();
         node.createRelationshipTo(dstNode, getRelationshipType(object.getRoleType()));
+    }
+
+    // ------------------------------------------------------------------------------------------------- Private Methods
+
+    /**
+     * Custom stringifier to avoid endless recursion.
+     */
+    private String toString(List<HyperObjectRole> hyperObjects) {
+        StringBuilder str = new StringBuilder("hyper edge " + getId());
+        for (HyperObjectRole hyperObject : hyperObjects) {
+            str.append("\n        " + hyperObject);
+        }
+        return str.toString();
     }
 }

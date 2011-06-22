@@ -18,6 +18,6 @@ class Neo4jHyperNode extends Neo4jHyperObject implements HyperNode {
 
     @Override
     public String toString() {
-        return "hyper node " + node.getId() + " " + getAttributesString(node);
+        return "hyper node " + getId() + " " + getAttributesString(node);
     }
 }

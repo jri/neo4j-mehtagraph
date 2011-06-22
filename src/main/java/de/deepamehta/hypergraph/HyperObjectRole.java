@@ -36,6 +36,6 @@ public class HyperObjectRole {
 
     @Override
     public String toString() {
-        return "hyper object role (" + hyperObject + ", roleType=\"" + roleType + "\")";
+        return "hyper object role (roleType=\"" + roleType + "\": " + hyperObject + ")";
     }
 }
