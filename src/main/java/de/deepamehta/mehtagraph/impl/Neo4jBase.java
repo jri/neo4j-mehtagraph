@@ -1,6 +1,6 @@
-package de.deepamehta.hypergraph.impl;
+package de.deepamehta.mehtagraph.impl;
 
-import de.deepamehta.hypergraph.HyperObject;
+import de.deepamehta.mehtagraph.MehtaObject;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
@@ -29,7 +29,7 @@ class Neo4jBase {
 
     // ------------------------------------------------------------------------------------------------------- Constants
 
-    protected static final String KEY_IS_HYPER_EDGE = "_is_hyper_edge";
+    protected static final String KEY_IS_MEHTA_EDGE = "_is_mehta_edge";
     protected static final String KEY_FULLTEXT = "_fulltext";
 
     // ---------------------------------------------------------------------------------------------- Instance Variables
@@ -70,35 +70,35 @@ class Neo4jBase {
 
     // ----------------------------------------------------------------------------------------------- Protected Methods
 
-    protected final Neo4jHyperNode buildHyperNode(Node node) {
+    protected final Neo4jMehtaNode buildMehtaNode(Node node) {
         if (node == null) {
-            throw new IllegalArgumentException("Tried to build a HyperNode from a null Node");
+            throw new IllegalArgumentException("Tried to build a MehtaNode from a null Node");
         }
         if (isAuxiliaryNode(node)) {
-            throw new IllegalArgumentException("ID " + node.getId() + " refers not to a HyperNode but to a HyperEdge");
+            throw new IllegalArgumentException("ID " + node.getId() + " refers not to a MehtaNode but to a MehtaEdge");
         }
-        return new Neo4jHyperNode(node, this);
+        return new Neo4jMehtaNode(node, this);
     }
 
-    protected final Neo4jHyperEdge buildHyperEdge(Node auxiliaryNode) {
+    protected final Neo4jMehtaEdge buildMehtaEdge(Node auxiliaryNode) {
         if (auxiliaryNode == null) {
-            throw new IllegalArgumentException("Tried to build a HyperEdge from a null auxiliary Node");
+            throw new IllegalArgumentException("Tried to build a MehtaEdge from a null auxiliary Node");
         }
         if (!isAuxiliaryNode(auxiliaryNode)) {
-            throw new IllegalArgumentException("ID " + auxiliaryNode.getId() + " refers not to a HyperEdge but to " +
-                "a HyperNode");
+            throw new IllegalArgumentException("ID " + auxiliaryNode.getId() + " refers not to a MehtaEdge but to " +
+                "a MehtaNode");
         }
-        return new Neo4jHyperEdge(auxiliaryNode, this);
+        return new Neo4jMehtaEdge(auxiliaryNode, this);
     }
 
-    protected final HyperObject buildHyperObject(Node node) {
-        return isAuxiliaryNode(node) ? buildHyperEdge(node) : buildHyperNode(node);
+    protected final MehtaObject buildMehtaObject(Node node) {
+        return isAuxiliaryNode(node) ? buildMehtaEdge(node) : buildMehtaNode(node);
     }
 
     // ---
 
     protected final boolean isAuxiliaryNode(Node node) {
-        return (Boolean) node.getProperty(KEY_IS_HYPER_EDGE, false);
+        return (Boolean) node.getProperty(KEY_IS_MEHTA_EDGE, false);
     }
 
 
@@ -106,17 +106,17 @@ class Neo4jBase {
     // === Traversal ===
 
     /**
-     * The created traversal description allows to find all hyper edges between two hyper nodes.
+     * The created traversal description allows to find all mehta edges between two mehta nodes.
      * <p>
-     * Called from {@link Neo4jHyperGraph#getHyperEdges}
+     * Called from {@link Neo4jMehtaGraph#getMehtaEdges}
      */
     protected final TraversalDescription createTraversalDescription(long connectedNodeId) {
         return Traversal.description()
             .evaluator(new AuxiliaryEvaluator())
             .evaluator(new ConnectedNodeEvaluator(connectedNodeId))
             .uniqueness(Uniqueness.RELATIONSHIP_GLOBAL);
-        // Note: we need to traverse a node more than once. Consider this case: hyper node A
-        // is connected with hyper node B via hyper edge C and A is connected to C as well.
+        // Note: we need to traverse a node more than once. Consider this case: mehta node A
+        // is connected with mehta node B via mehta edge C and A is connected to C as well.
         // (default uniqueness is not RELATIONSHIP_GLOBAL, but probably NODE_GLOBAL).
     }
 

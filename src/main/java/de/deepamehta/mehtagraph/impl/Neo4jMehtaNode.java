@@ -1,16 +1,16 @@
-package de.deepamehta.hypergraph.impl;
+package de.deepamehta.mehtagraph.impl;
 
-import de.deepamehta.hypergraph.HyperNode;
+import de.deepamehta.mehtagraph.MehtaNode;
 
 import org.neo4j.graphdb.Node;
 
 
 
-class Neo4jHyperNode extends Neo4jHyperObject implements HyperNode {
+class Neo4jMehtaNode extends Neo4jMehtaObject implements MehtaNode {
 
     // ---------------------------------------------------------------------------------------------------- Constructors
 
-    Neo4jHyperNode(Node node, Neo4jBase base) {
+    Neo4jMehtaNode(Node node, Neo4jBase base) {
         super(node, base);
     }
 
@@ -18,6 +18,6 @@ class Neo4jHyperNode extends Neo4jHyperObject implements HyperNode {
 
     @Override
     public String toString() {
-        return "hyper node " + getId() + " " + getAttributesString(node);
+        return "mehta node " + getId() + " " + getAttributesString(node);
     }
 }

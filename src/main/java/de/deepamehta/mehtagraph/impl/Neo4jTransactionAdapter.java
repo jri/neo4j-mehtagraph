@@ -1,6 +1,6 @@
-package de.deepamehta.hypergraph.impl;
+package de.deepamehta.mehtagraph.impl;
 
-import de.deepamehta.hypergraph.HyperGraphTransaction;
+import de.deepamehta.mehtagraph.MehtaGraphTransaction;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Transaction;
@@ -8,9 +8,9 @@ import org.neo4j.graphdb.Transaction;
 
 
 /**
- * Adapts a Neo4j transaction to a HyperGraph transaction.
+ * Adapts a Neo4j transaction to a MehtaGraph transaction.
  */
-class Neo4jTransactionAdapter implements HyperGraphTransaction {
+class Neo4jTransactionAdapter implements MehtaGraphTransaction {
 
     // ---------------------------------------------------------------------------------------------- Instance Variables
 

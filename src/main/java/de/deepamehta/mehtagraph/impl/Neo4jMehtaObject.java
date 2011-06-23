@@ -1,10 +1,10 @@
-package de.deepamehta.hypergraph.impl;
+package de.deepamehta.mehtagraph.impl;
 
-import de.deepamehta.hypergraph.ConnectedHyperEdge;
-import de.deepamehta.hypergraph.ConnectedHyperNode;
-import de.deepamehta.hypergraph.HyperEdge;
-import de.deepamehta.hypergraph.HyperGraphIndexMode;
-import de.deepamehta.hypergraph.HyperObject;
+import de.deepamehta.mehtagraph.ConnectedMehtaEdge;
+import de.deepamehta.mehtagraph.ConnectedMehtaNode;
+import de.deepamehta.mehtagraph.MehtaEdge;
+import de.deepamehta.mehtagraph.MehtaGraphIndexMode;
+import de.deepamehta.mehtagraph.MehtaObject;
 
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 
 
 
-class Neo4jHyperObject extends Neo4jBase implements HyperObject {
+class Neo4jMehtaObject extends Neo4jBase implements MehtaObject {
 
     // ---------------------------------------------------------------------------------------------- Instance Variables
 
@@ -36,7 +36,7 @@ class Neo4jHyperObject extends Neo4jBase implements HyperObject {
 
     // ---------------------------------------------------------------------------------------------------- Constructors
 
-    protected Neo4jHyperObject(Node node, Neo4jBase base) {
+    protected Neo4jMehtaObject(Node node, Neo4jBase base) {
         super(base);
         this.node = node;
     }
@@ -45,7 +45,7 @@ class Neo4jHyperObject extends Neo4jBase implements HyperObject {
 
 
 
-    // === HyperObject Implementation ===
+    // === MehtaObject Implementation ===
 
     @Override
     public long getId() {
@@ -132,15 +132,15 @@ class Neo4jHyperObject extends Neo4jBase implements HyperObject {
     // --- Indexing ---
 
     @Override
-    public void indexAttribute(HyperGraphIndexMode indexMode, Object value, Object oldValue) {
+    public void indexAttribute(MehtaGraphIndexMode indexMode, Object value, Object oldValue) {
         indexAttribute(indexMode, null, value, oldValue);
     }
 
     @Override
-    public void indexAttribute(HyperGraphIndexMode indexMode, String indexKey, Object value, Object oldValue) {
-        if (indexMode == HyperGraphIndexMode.OFF) {
+    public void indexAttribute(MehtaGraphIndexMode indexMode, String indexKey, Object value, Object oldValue) {
+        if (indexMode == MehtaGraphIndexMode.OFF) {
             return;
-        } else if (indexMode == HyperGraphIndexMode.KEY) {
+        } else if (indexMode == MehtaGraphIndexMode.KEY) {
             if (oldValue != null) {
                 // FIXME: new index API doesn't work with OSGi
                 // exactIndex.remove(node, indexKey, oldValue);             // remove old
@@ -149,7 +149,7 @@ class Neo4jHyperObject extends Neo4jBase implements HyperObject {
             // FIXME: new index API doesn't work with OSGi
             // exactIndex.add(node, indexKey, value);                       // index new
             exactIndex.index(node, indexKey, value);                        // index new
-        } else if (indexMode == HyperGraphIndexMode.FULLTEXT) {
+        } else if (indexMode == MehtaGraphIndexMode.FULLTEXT) {
             // Note: all the topic's FULLTEXT properties are indexed under the same key ("default").
             // So, when removing from index we must explicitley give the old value.
             if (oldValue != null) {
@@ -160,7 +160,7 @@ class Neo4jHyperObject extends Neo4jBase implements HyperObject {
             // FIXME: new index API doesn't work with OSGi
             // fulltextIndex.add(node, KEY_FULLTEXT, value);                // index new
             fulltextIndex.index(node, KEY_FULLTEXT, value);                 // index new
-        } else if (indexMode == HyperGraphIndexMode.FULLTEXT_KEY) {
+        } else if (indexMode == MehtaGraphIndexMode.FULLTEXT_KEY) {
             if (oldValue != null) {
                 // FIXME: new index API doesn't work with OSGi
                 // fulltextIndex.remove(node, indexKey, oldValue);          // remove old
@@ -177,7 +177,7 @@ class Neo4jHyperObject extends Neo4jBase implements HyperObject {
     // --- Traversal ---
 
     @Override
-    public Set<HyperEdge> getHyperEdges(String myRoleType) {
+    public Set<MehtaEdge> getMehtaEdges(String myRoleType) {
         Iterable<Relationship> rels;
         if (myRoleType == null) {
             rels = node.getRelationships(Direction.INCOMING);
@@ -185,14 +185,14 @@ class Neo4jHyperObject extends Neo4jBase implements HyperObject {
             rels = node.getRelationships(getRelationshipType(myRoleType), Direction.INCOMING);
         }
         //
-        return buildHyperEdges(rels);
+        return buildMehtaEdges(rels);
     }
 
     // ---
 
     @Override
-    public ConnectedHyperNode getConnectedHyperNode(String myRoleType, String othersRoleType) {
-        Set<ConnectedHyperNode> nodes = getConnectedHyperNodes(myRoleType, othersRoleType);
+    public ConnectedMehtaNode getConnectedMehtaNode(String myRoleType, String othersRoleType) {
+        Set<ConnectedMehtaNode> nodes = getConnectedMehtaNodes(myRoleType, othersRoleType);
         switch (nodes.size()) {
         case 0:
             return null;
@@ -205,11 +205,11 @@ class Neo4jHyperObject extends Neo4jBase implements HyperObject {
     }
 
     @Override
-    public Set<ConnectedHyperNode> getConnectedHyperNodes(String myRoleType, String othersRoleType) {
+    public Set<ConnectedMehtaNode> getConnectedMehtaNodes(String myRoleType, String othersRoleType) {
         return new TraveralResultBuilder(node, createTraversalDescription(myRoleType, othersRoleType)) {
             @Override
             Object buildResult(Node connectedNode, Node auxiliaryNode) {
-                return new ConnectedHyperNode(buildHyperNode(connectedNode), buildHyperEdge(auxiliaryNode));
+                return new ConnectedMehtaNode(buildMehtaNode(connectedNode), buildMehtaEdge(auxiliaryNode));
             }
         }.getResult();
     }
@@ -217,8 +217,8 @@ class Neo4jHyperObject extends Neo4jBase implements HyperObject {
     // ---
 
     @Override
-    public ConnectedHyperEdge getConnectedHyperEdge(String myRoleType, String othersRoleType) {
-        Set<ConnectedHyperEdge> edges = getConnectedHyperEdges(myRoleType, othersRoleType);
+    public ConnectedMehtaEdge getConnectedMehtaEdge(String myRoleType, String othersRoleType) {
+        Set<ConnectedMehtaEdge> edges = getConnectedMehtaEdges(myRoleType, othersRoleType);
         switch (edges.size()) {
         case 0:
             return null;
@@ -231,11 +231,11 @@ class Neo4jHyperObject extends Neo4jBase implements HyperObject {
     }
 
     @Override
-    public Set<ConnectedHyperEdge> getConnectedHyperEdges(String myRoleType, String othersRoleType) {
+    public Set<ConnectedMehtaEdge> getConnectedMehtaEdges(String myRoleType, String othersRoleType) {
         return new TraveralResultBuilder(node, createTraversalDescription(myRoleType, othersRoleType)) {
             @Override
             Object buildResult(Node connectedNode, Node auxiliaryNode) {
-                return new ConnectedHyperEdge(buildHyperEdge(connectedNode), buildHyperEdge(auxiliaryNode));
+                return new ConnectedMehtaEdge(buildMehtaEdge(connectedNode), buildMehtaEdge(auxiliaryNode));
             }
         }.getResult();
     }
@@ -284,18 +284,18 @@ class Neo4jHyperObject extends Neo4jBase implements HyperObject {
     // === Traversal ===
 
     /**
-     * The created traversal description allows to find connected hyper nodes/hyper edges that
+     * The created traversal description allows to find connected mehta nodes/mehta edges that
      * are connected to the start node/edge via the given role types.
      * <p>
-     * Called from {@link #getConnectedHyperNodes} and {@link #getConnectedHyperEdges}
+     * Called from {@link #getConnectedMehtaNodes} and {@link #getConnectedMehtaEdges}
      *
      * @param   myRoleType      Pass <code>null</code> to switch role type filter off.
      * @param   othersRoleType  Pass <code>null</code> to switch role type filter off.
      */
     private TraversalDescription createTraversalDescription(String myRoleType, String othersRoleType) {
         TraversalDescription desc = Traversal.description().uniqueness(Uniqueness.RELATIONSHIP_GLOBAL);
-        // Note: we need to traverse a node more than once. Consider this case: hyper node A
-        // is connected with hyper node B via hyper edge C and A is connected to C as well.
+        // Note: we need to traverse a node more than once. Consider this case: mehta node A
+        // is connected with mehta node B via mehta edge C and A is connected to C as well.
         // (default uniqueness is not RELATIONSHIP_GLOBAL, but probably NODE_GLOBAL).
         if (myRoleType != null && othersRoleType != null) {
             return desc.evaluator(new RoleTypeEvaluator(myRoleType, othersRoleType))
@@ -343,11 +343,11 @@ class Neo4jHyperObject extends Neo4jBase implements HyperObject {
 
     // === Helper ===
 
-    private Set<HyperEdge> buildHyperEdges(Iterable<Relationship> relationships) {
+    private Set<MehtaEdge> buildMehtaEdges(Iterable<Relationship> relationships) {
         Set edges = new HashSet();
         for (Relationship rel : relationships) {
             Node auxiliaryNode = rel.getStartNode();
-            edges.add(buildHyperEdge(auxiliaryNode));
+            edges.add(buildMehtaEdge(auxiliaryNode));
         }
         return edges;
     }

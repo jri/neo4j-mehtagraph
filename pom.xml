@@ -4,9 +4,9 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <name>Neo4j - Hypergraph</name>
+    <name>Neo4j - Mehtagraph</name>
     <groupId>de.deepamehta</groupId>
-    <artifactId>neo4j-hypergraph</artifactId>
+    <artifactId>neo4j-mehtagraph</artifactId>
     <version>0.6-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
@@ -61,8 +61,8 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            de.deepamehta.hypergraph,
-                            de.deepamehta.hypergraph.impl
+                            de.deepamehta.mehtagraph,
+                            de.deepamehta.mehtagraph.impl
                         </Export-Package>
                     </instructions>
                 </configuration>

@@ -1,6 +1,6 @@
-package de.deepamehta.hypergraph;
+package de.deepamehta.mehtagraph;
 
-import de.deepamehta.hypergraph.impl.Neo4jHyperGraph;
+import de.deepamehta.mehtagraph.impl.Neo4jMehtaGraph;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -26,9 +26,9 @@ import java.util.logging.Logger;
 
 
 
-public class HyperGraphTest {
+public class MehtaGraphTest {
 
-    private HyperGraph hg;
+    private MehtaGraph hg;
 
     private final Logger logger = Logger.getLogger(getClass().getName());
 
@@ -37,15 +37,15 @@ public class HyperGraphTest {
     @Before
     public void setup() {
         GraphDatabaseService neo4j = new EmbeddedGraphDatabase(createTempDirectory("neo4j"));
-        hg = new Neo4jHyperGraph(neo4j);
+        hg = new Neo4jMehtaGraph(neo4j);
         //
         setupContent();
     }
 
     @Test
     public void testTraversal() {
-        HyperNode node = hg.getHyperNode("uri", "dm3.core.data_type");
-        HyperNode topicType = getType(node);
+        MehtaNode node = hg.getMehtaNode("uri", "dm3.core.data_type");
+        MehtaNode topicType = getType(node);
         logger.info("### topicType=" + topicType);
         assertEquals("dm3.core.topic_type", topicType.getString("uri"));
         assertEquals("Topic Type", topicType.getString("value"));
@@ -53,10 +53,10 @@ public class HyperGraphTest {
 
     @Test
     public void testIndex() {
-        List<HyperNode> nodes1 = hg.queryHyperNodes("DeepaMehta");
+        List<MehtaNode> nodes1 = hg.queryMehtaNodes("DeepaMehta");
         assertEquals(2, nodes1.size());
         //
-        List<HyperNode> nodes2 = hg.queryHyperNodes("collaboration platform");
+        List<MehtaNode> nodes2 = hg.queryMehtaNodes("collaboration platform");
         assertEquals(1, nodes2.size());
     }
 
@@ -67,38 +67,38 @@ public class HyperGraphTest {
 
     // ------------------------------------------------------------------------------------------------- Private Methods
 
-    HyperNode getType(HyperNode node) {
-        return node.getConnectedHyperNode("dm3.core.instance", "dm3.core.type").getHyperNode();
+    MehtaNode getType(MehtaNode node) {
+        return node.getConnectedMehtaNode("dm3.core.instance", "dm3.core.type").getMehtaNode();
     }
 
     private void setupContent() {
-        HyperGraphTransaction tx = hg.beginTx();
+        MehtaGraphTransaction tx = hg.beginTx();
         try {
-            HyperNode node1 = hg.createHyperNode();
+            MehtaNode node1 = hg.createMehtaNode();
             node1.setString("uri", "dm3.core.topic_type");
             node1.setString("value", "Topic Type");
-            node1.indexAttribute(HyperGraphIndexMode.KEY, "uri", "dm3.core.topic_type", null);
+            node1.indexAttribute(MehtaGraphIndexMode.KEY, "uri", "dm3.core.topic_type", null);
             //
-            HyperNode node2 = hg.createHyperNode();
+            MehtaNode node2 = hg.createMehtaNode();
             node2.setString("uri", "dm3.core.data_type");
             node2.setString("value", "Data Type");
-            node2.indexAttribute(HyperGraphIndexMode.KEY, "uri", "dm3.core.data_type", null);
+            node2.indexAttribute(MehtaGraphIndexMode.KEY, "uri", "dm3.core.data_type", null);
             //
-            HyperEdge edge = hg.createHyperEdge(new HyperObjectRole(node1, "dm3.core.type"),
-                                                new HyperObjectRole(node2, "dm3.core.instance"));
+            MehtaEdge edge = hg.createMehtaEdge(new MehtaObjectRole(node1, "dm3.core.type"),
+                                                new MehtaObjectRole(node2, "dm3.core.instance"));
             //
             String text1 = "DeepaMehta is a platform for collaboration and knowledge management";
             String text2 = "Lead developer of DeepaMehta is Jörg Richter";
             //
-            HyperNode node3 = hg.createHyperNode();
+            MehtaNode node3 = hg.createMehtaNode();
             node3.setString("uri", "note-1");
             node3.setString("value", text1);
-            node3.indexAttribute(HyperGraphIndexMode.FULLTEXT, text1, null);
+            node3.indexAttribute(MehtaGraphIndexMode.FULLTEXT, text1, null);
             //
-            HyperNode node4 = hg.createHyperNode();
+            MehtaNode node4 = hg.createMehtaNode();
             node4.setString("uri", "note-2");
             node4.setString("value", text2);
-            node4.indexAttribute(HyperGraphIndexMode.FULLTEXT, text2, null);
+            node4.indexAttribute(MehtaGraphIndexMode.FULLTEXT, text2, null);
             //
             tx.success();
         } finally {

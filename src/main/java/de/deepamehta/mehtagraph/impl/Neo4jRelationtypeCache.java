@@ -1,4 +1,4 @@
-package de.deepamehta.hypergraph.impl;
+package de.deepamehta.mehtagraph.impl;
 
 import org.neo4j.graphdb.DynamicRelationshipType;
 import org.neo4j.graphdb.GraphDatabaseService;

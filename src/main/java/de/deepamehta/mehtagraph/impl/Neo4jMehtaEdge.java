@@ -1,8 +1,8 @@
-package de.deepamehta.hypergraph.impl;
+package de.deepamehta.mehtagraph.impl;
 
-import de.deepamehta.hypergraph.HyperEdge;
-import de.deepamehta.hypergraph.HyperObject;
-import de.deepamehta.hypergraph.HyperObjectRole;
+import de.deepamehta.mehtagraph.MehtaEdge;
+import de.deepamehta.mehtagraph.MehtaObject;
+import de.deepamehta.mehtagraph.MehtaObjectRole;
 
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 
 
-class Neo4jHyperEdge extends Neo4jHyperObject implements HyperEdge {
+class Neo4jMehtaEdge extends Neo4jMehtaObject implements MehtaEdge {
 
     // ---------------------------------------------------------------------------------------------- Instance Variables
 
@@ -22,7 +22,7 @@ class Neo4jHyperEdge extends Neo4jHyperObject implements HyperEdge {
 
     // ---------------------------------------------------------------------------------------------------- Constructors
 
-    Neo4jHyperEdge(Node node, Neo4jBase base) {
+    Neo4jMehtaEdge(Node node, Neo4jBase base) {
         super(node, base);
     }
 
@@ -30,36 +30,36 @@ class Neo4jHyperEdge extends Neo4jHyperObject implements HyperEdge {
 
 
 
-    // === HyperEdge Implementation ===
+    // === MehtaEdge Implementation ===
 
     @Override
-    public List<HyperObjectRole> getHyperObjects() {
-        List<HyperObjectRole> hyperObjects = new ArrayList();
+    public List<MehtaObjectRole> getMehtaObjects() {
+        List<MehtaObjectRole> mehtaObjects = new ArrayList();
         for (Relationship rel : node.getRelationships(Direction.OUTGOING)) {
             Node node = rel.getEndNode();
             String roleType = rel.getType().name();
-            HyperObject hyperObject = buildHyperObject(node);
-            hyperObjects.add(new Neo4jHyperObjectRole(hyperObject, roleType, rel));
+            MehtaObject mehtaObject = buildMehtaObject(node);
+            mehtaObjects.add(new Neo4jMehtaObjectRole(mehtaObject, roleType, rel));
         }
         // sanity check
-        if (hyperObjects.size() != 2) {
+        if (mehtaObjects.size() != 2) {
             // Note: custom toString() stringifier called here to avoid endless recursion.
-            // The default stringifier would call getHyperObjects() again and fail endlessly.
-            throw new RuntimeException("Graph inconsistency: hyper edge " + getId() + " connects " +
-                hyperObjects.size() + " hyper objects instead of 2 (" + toString(hyperObjects) + ")");
+            // The default stringifier would call getMehtaObjects() again and fail endlessly.
+            throw new RuntimeException("Graph inconsistency: mehta edge " + getId() + " connects " +
+                mehtaObjects.size() + " mehta objects instead of 2 (" + toString(mehtaObjects) + ")");
         }
         //
-        return hyperObjects;
+        return mehtaObjects;
     }
 
     @Override
-    public HyperObjectRole getHyperObject(long objectId) {
-        List<HyperObjectRole> roles = getHyperObjects();
-        long id1 = roles.get(0).getHyperObject().getId();
-        long id2 = roles.get(1).getHyperObject().getId();
+    public MehtaObjectRole getMehtaObject(long objectId) {
+        List<MehtaObjectRole> roles = getMehtaObjects();
+        long id1 = roles.get(0).getMehtaObject().getId();
+        long id2 = roles.get(1).getMehtaObject().getId();
         //
         if (id1 == objectId && id2 == objectId) {
-            throw new RuntimeException("Self-connected hyper objects are not supported (" + this + ")");
+            throw new RuntimeException("Self-connected mehta objects are not supported (" + this + ")");
         }
         //
         if (id1 == objectId) {
@@ -67,25 +67,25 @@ class Neo4jHyperEdge extends Neo4jHyperObject implements HyperEdge {
         } else if (id2 == objectId) {
             return roles.get(1);
         } else {
-            throw new RuntimeException("Hyper object " + objectId + " plays no role in " + this);
+            throw new RuntimeException("Mehta object " + objectId + " plays no role in " + this);
         }
     }
 
     @Override
-    public HyperObject getHyperObject(String roleType) {
+    public MehtaObject getMehtaObject(String roleType) {
         Relationship rel = node.getSingleRelationship(getRelationshipType(roleType), Direction.OUTGOING);
         if (rel == null) return null;
-        return buildHyperObject(rel.getEndNode());
+        return buildMehtaObject(rel.getEndNode());
     }
 
 
 
-    // === HyperObject Overrides ===
+    // === MehtaObject Overrides ===
 
     @Override
     public void delete() {
         // delete all the node's relationships
-        // FIXME: hyper edges connected with this edge gets truncated
+        // FIXME: mehta edges connected with this edge gets truncated
         for (Relationship rel : node.getRelationships()) {
             rel.delete();
         }
@@ -99,15 +99,15 @@ class Neo4jHyperEdge extends Neo4jHyperObject implements HyperEdge {
 
     @Override
     public String toString() {
-        return toString(getHyperObjects());
+        return toString(getMehtaObjects());
     }
 
 
 
     // ----------------------------------------------------------------------------------------- Package Private Methods
 
-    void addHyperObject(HyperObjectRole object) {
-        Node dstNode = ((Neo4jHyperObject) object.getHyperObject()).getNode();
+    void addMehtaObject(MehtaObjectRole object) {
+        Node dstNode = ((Neo4jMehtaObject) object.getMehtaObject()).getNode();
         node.createRelationshipTo(dstNode, getRelationshipType(object.getRoleType()));
     }
 
@@ -116,10 +116,10 @@ class Neo4jHyperEdge extends Neo4jHyperObject implements HyperEdge {
     /**
      * Custom stringifier to avoid endless recursion.
      */
-    private String toString(List<HyperObjectRole> hyperObjects) {
-        StringBuilder str = new StringBuilder("hyper edge " + getId());
-        for (HyperObjectRole hyperObject : hyperObjects) {
-            str.append("\n        " + hyperObject);
+    private String toString(List<MehtaObjectRole> mehtaObjects) {
+        StringBuilder str = new StringBuilder("mehta edge " + getId());
+        for (MehtaObjectRole mehtaObject : mehtaObjects) {
+            str.append("\n        " + mehtaObject);
         }
         return str.toString();
     }

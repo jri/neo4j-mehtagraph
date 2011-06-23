@@ -1,25 +1,25 @@
-package de.deepamehta.hypergraph;
+package de.deepamehta.mehtagraph;
 
 
 
-public class HyperObjectRole {
+public class MehtaObjectRole {
 
     // ---------------------------------------------------------------------------------------------- Instance Variables
 
-    private HyperObject hyperObject;
+    private MehtaObject mehtaObject;
     private String roleType;
 
     // ---------------------------------------------------------------------------------------------------- Constructors
 
-    public HyperObjectRole(HyperObject hyperObject, String roleType) {
-        this.hyperObject = hyperObject;
+    public MehtaObjectRole(MehtaObject mehtaObject, String roleType) {
+        this.mehtaObject = mehtaObject;
         this.roleType = roleType;
     }
 
     // -------------------------------------------------------------------------------------------------- Public Methods
 
-    public HyperObject getHyperObject() {
-        return hyperObject;
+    public MehtaObject getMehtaObject() {
+        return mehtaObject;
     }
 
     // ---
@@ -36,6 +36,6 @@ public class HyperObjectRole {
 
     @Override
     public String toString() {
-        return "hyper object role (roleType=\"" + roleType + "\": " + hyperObject + ")";
+        return "mehta object role (roleType=\"" + roleType + "\": " + mehtaObject + ")";
     }
 }

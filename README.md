@@ -1,5 +1,5 @@
 
-Neo4j Hypergraph
+Neo4j Mehtagraph
 ================
 
 A persistence layer for hypergraphs on-top of [Neo4j](http://neo4j.org/). In mathematics, a [hypergraph](http://en.wikipedia.org/wiki/Hypergraph) is a generalization of a graph, where an edge can connect any number of nodes (not only two). In this implementation nodes and edges are attributed. The role a node occupies in an edge is modeled as *role type*.

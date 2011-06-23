@@ -1,10 +1,10 @@
-package de.deepamehta.hypergraph;
+package de.deepamehta.mehtagraph;
 
 import java.util.Set;
 
 
 
-public interface HyperObject {
+public interface MehtaObject {
 
     long getId();
 
@@ -67,12 +67,12 @@ public interface HyperObject {
     /**
      * @param   oldValue    The value to remove from index. If <code>null</code> no removal is performed.
      */
-    void indexAttribute(HyperGraphIndexMode indexMode, Object value, Object oldValue);
+    void indexAttribute(MehtaGraphIndexMode indexMode, Object value, Object oldValue);
 
     /**
      * @param   oldValue    The value to remove from index. If <code>null</code> no removal is performed.
      */
-    void indexAttribute(HyperGraphIndexMode indexMode, String indexKey, Object value, Object oldValue);
+    void indexAttribute(MehtaGraphIndexMode indexMode, String indexKey, Object value, Object oldValue);
 
 
 
@@ -81,7 +81,7 @@ public interface HyperObject {
     /**
      * @param   myRoleType      Pass <code>null</code> to switch role type filter off.
      */
-    Set<HyperEdge> getHyperEdges(String myRoleType);
+    Set<MehtaEdge> getMehtaEdges(String myRoleType);
 
     // ---
 
@@ -89,13 +89,13 @@ public interface HyperObject {
      * @param   myRoleType      Pass <code>null</code> to switch role type filter off.
      * @param   othersRoleType  Pass <code>null</code> to switch role type filter off.
      */
-    ConnectedHyperNode getConnectedHyperNode(String myRoleType, String othersRoleType);
+    ConnectedMehtaNode getConnectedMehtaNode(String myRoleType, String othersRoleType);
 
     /**
      * @param   myRoleType      Pass <code>null</code> to switch role type filter off.
      * @param   othersRoleType  Pass <code>null</code> to switch role type filter off.
      */
-    Set<ConnectedHyperNode> getConnectedHyperNodes(String myRoleType, String othersRoleType);
+    Set<ConnectedMehtaNode> getConnectedMehtaNodes(String myRoleType, String othersRoleType);
 
     // ---
 
@@ -103,13 +103,13 @@ public interface HyperObject {
      * @param   myRoleType      Pass <code>null</code> to switch role type filter off.
      * @param   othersRoleType  Pass <code>null</code> to switch role type filter off.
      */
-    ConnectedHyperEdge getConnectedHyperEdge(String myRoleType, String othersRoleType);
+    ConnectedMehtaEdge getConnectedMehtaEdge(String myRoleType, String othersRoleType);
 
     /**
      * @param   myRoleType      Pass <code>null</code> to switch role type filter off.
      * @param   othersRoleType  Pass <code>null</code> to switch role type filter off.
      */
-    Set<ConnectedHyperEdge> getConnectedHyperEdges(String myRoleType, String othersRoleType);
+    Set<ConnectedMehtaEdge> getConnectedMehtaEdges(String myRoleType, String othersRoleType);
 
 
 

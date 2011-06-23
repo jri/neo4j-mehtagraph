@@ -1,10 +1,10 @@
-package de.deepamehta.hypergraph.impl;
+package de.deepamehta.mehtagraph.impl;
 
-import de.deepamehta.hypergraph.HyperEdge;
-import de.deepamehta.hypergraph.HyperGraph;
-import de.deepamehta.hypergraph.HyperNode;
-import de.deepamehta.hypergraph.HyperObjectRole;
-import de.deepamehta.hypergraph.HyperGraphTransaction;
+import de.deepamehta.mehtagraph.MehtaEdge;
+import de.deepamehta.mehtagraph.MehtaGraph;
+import de.deepamehta.mehtagraph.MehtaNode;
+import de.deepamehta.mehtagraph.MehtaObjectRole;
+import de.deepamehta.mehtagraph.MehtaGraphTransaction;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 
 
 
-public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
+public class Neo4jMehtaGraph extends Neo4jBase implements MehtaGraph {
 
     // ---------------------------------------------------------------------------------------------- Instance Variables
 
@@ -32,7 +32,7 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
 
     // ---------------------------------------------------------------------------------------------------- Constructors
 
-    public Neo4jHyperGraph(GraphDatabaseService neo4j) {
+    public Neo4jMehtaGraph(GraphDatabaseService neo4j) {
         super(neo4j);
         this.relTypeCache = new Neo4jRelationtypeCache(neo4j);
         try {
@@ -56,55 +56,55 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
 
 
 
-    // === HyperGraph Implementation ===
+    // === MehtaGraph Implementation ===
 
     @Override
-    public HyperNode createHyperNode() {
-        return buildHyperNode(neo4j.createNode());
+    public MehtaNode createMehtaNode() {
+        return buildMehtaNode(neo4j.createNode());
     }
 
     @Override
-    public HyperEdge createHyperEdge(HyperObjectRole object1, HyperObjectRole object2) {
-        Neo4jHyperEdge hyperEdge = createHyperEdge();
-        hyperEdge.addHyperObject(object1);
-        hyperEdge.addHyperObject(object2);
-        return hyperEdge;
+    public MehtaEdge createMehtaEdge(MehtaObjectRole object1, MehtaObjectRole object2) {
+        Neo4jMehtaEdge mehtaEdge = createMehtaEdge();
+        mehtaEdge.addMehtaObject(object1);
+        mehtaEdge.addMehtaObject(object2);
+        return mehtaEdge;
     }
 
     // ---
 
     @Override
-    public HyperNode getHyperNode(long id) {
-        return buildHyperNode(neo4j.getNodeById(id));
+    public MehtaNode getMehtaNode(long id) {
+        return buildMehtaNode(neo4j.getNodeById(id));
     }
 
     @Override
-    public HyperNode getHyperNode(String key, Object value) {
+    public MehtaNode getMehtaNode(String key, Object value) {
         if (value == null) {
-            throw new IllegalArgumentException("Tried to call getHyperNode() with a null value Object (key=\"" +
+            throw new IllegalArgumentException("Tried to call getMehtaNode() with a null value Object (key=\"" +
                 key + "\")");
         }
         //
         // FIXME: new index API doesn't work with OSGi
         // Node node = exactIndex.get(key, value).getSingle();
         Node node = exactIndex.getSingleNode(key, value);
-        return node != null ? buildHyperNode(node) : null;
+        return node != null ? buildMehtaNode(node) : null;
     }
 
     // ---
 
     @Override
-    public List<HyperNode> queryHyperNodes(Object value) {
-        return queryHyperNodes(null, value);
+    public List<MehtaNode> queryMehtaNodes(Object value) {
+        return queryMehtaNodes(null, value);
     }
 
     @Override
-    public List<HyperNode> queryHyperNodes(String key, Object value) {
+    public List<MehtaNode> queryMehtaNodes(String key, Object value) {
         if (key == null) {
             key = KEY_FULLTEXT;
         }
         if (value == null) {
-            throw new IllegalArgumentException("Tried to call queryHyperNodes() with a null value Object (key=\"" +
+            throw new IllegalArgumentException("Tried to call queryMehtaNodes() with a null value Object (key=\"" +
                 key + "\")");
         }
         //
@@ -112,7 +112,7 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
         // FIXME: new index API doesn't work with OSGi
         // for (Node node : fulltextIndex.query(key, value)) {
         for (Node node : fulltextIndex.getNodes(key, value)) {
-            nodes.add(buildHyperNode(node));
+            nodes.add(buildMehtaNode(node));
         }
         return nodes;
     }
@@ -120,16 +120,16 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
     // ---
 
     @Override
-    public HyperEdge getHyperEdge(long id) {
-        return buildHyperEdge(neo4j.getNodeById(id));
+    public MehtaEdge getMehtaEdge(long id) {
+        return buildMehtaEdge(neo4j.getNodeById(id));
     }
 
     @Override
-    public Set<HyperEdge> getHyperEdges(long node1Id, long node2Id) {
+    public Set<MehtaEdge> getMehtaEdges(long node1Id, long node2Id) {
         return new TraveralResultBuilder(neo4j.getNodeById(node1Id), createTraversalDescription(node2Id)) {
             @Override
             Object buildResult(Node connectedNode, Node auxiliaryNode) {
-                return buildHyperEdge(auxiliaryNode);
+                return buildMehtaEdge(auxiliaryNode);
             }
         }.getResult();
     }
@@ -137,7 +137,7 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
     // ---
 
     @Override
-    public HyperGraphTransaction beginTx() {
+    public MehtaGraphTransaction beginTx() {
         return new Neo4jTransactionAdapter(neo4j);
     }
 
@@ -151,9 +151,9 @@ public class Neo4jHyperGraph extends Neo4jBase implements HyperGraph {
 
     // ------------------------------------------------------------------------------------------------- Private Methods
 
-    private Neo4jHyperEdge createHyperEdge() {
+    private Neo4jMehtaEdge createMehtaEdge() {
         Node auxiliaryNode = neo4j.createNode();
-        auxiliaryNode.setProperty(KEY_IS_HYPER_EDGE, true);
-        return buildHyperEdge(auxiliaryNode);
+        auxiliaryNode.setProperty(KEY_IS_MEHTA_EDGE, true);
+        return buildMehtaEdge(auxiliaryNode);
     }
 }

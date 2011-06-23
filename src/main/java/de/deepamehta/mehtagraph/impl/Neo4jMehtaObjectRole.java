@@ -1,7 +1,7 @@
-package de.deepamehta.hypergraph.impl;
+package de.deepamehta.mehtagraph.impl;
 
-import de.deepamehta.hypergraph.HyperObject;
-import de.deepamehta.hypergraph.HyperObjectRole;
+import de.deepamehta.mehtagraph.MehtaObject;
+import de.deepamehta.mehtagraph.MehtaObjectRole;
 
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
@@ -9,7 +9,7 @@ import org.neo4j.graphdb.RelationshipType;
 
 
 
-class Neo4jHyperObjectRole extends HyperObjectRole {
+class Neo4jMehtaObjectRole extends MehtaObjectRole {
 
     // ---------------------------------------------------------------------------------------------- Instance Variables
 
@@ -17,14 +17,14 @@ class Neo4jHyperObjectRole extends HyperObjectRole {
 
     // ---------------------------------------------------------------------------------------------------- Constructors
 
-    Neo4jHyperObjectRole(HyperObject hyperObject, String roleType, Relationship rel) {
-        super(hyperObject, roleType);
+    Neo4jMehtaObjectRole(MehtaObject mehtaObject, String roleType, Relationship rel) {
+        super(mehtaObject, roleType);
         this.rel = rel;
     }
 
     // -------------------------------------------------------------------------------------------------- Public Methods
 
-    // === HyperObjectRole Overrides ===
+    // === MehtaObjectRole Overrides ===
 
     @Override
     public void setRoleType(String roleType) {
@@ -40,7 +40,7 @@ class Neo4jHyperObjectRole extends HyperObjectRole {
         Node startNode = rel.getStartNode();
         Node endNode = rel.getEndNode();
         rel.delete();
-        RelationshipType relType = ((Neo4jHyperObject) getHyperObject()).getRelationshipType(roleType);
+        RelationshipType relType = ((Neo4jMehtaObject) getMehtaObject()).getRelationshipType(roleType);
         startNode.createRelationshipTo(endNode, relType);
     }
 }
