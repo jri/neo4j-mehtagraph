@@ -199,7 +199,7 @@ class Neo4jMehtaObject extends Neo4jBase implements MehtaObject {
         case 1:
             return nodes.iterator().next();
         default:
-            throw new RuntimeException("Ambiguity: there are " + nodes.size() + " connected nodes (" + node +
+            throw new RuntimeException("Ambiguity: there are " + nodes.size() + " connected nodes (" + this +
                 ", myRoleType=\"" + myRoleType + "\", othersRoleType=\"" + othersRoleType + "\")");
         }
     }
@@ -225,7 +225,7 @@ class Neo4jMehtaObject extends Neo4jBase implements MehtaObject {
         case 1:
             return edges.iterator().next();
         default:
-            throw new RuntimeException("Ambiguity: there are " + edges.size() + " connected edges (" + node +
+            throw new RuntimeException("Ambiguity: there are " + edges.size() + " connected edges (" + this +
                 ", myRoleType=\"" + myRoleType + "\", othersRoleType=\"" + othersRoleType + "\")");
         }
     }
