@@ -35,7 +35,7 @@ class Neo4jMehtaEdge extends Neo4jMehtaObject implements MehtaEdge {
     @Override
     public List<MehtaObjectRole> getMehtaObjects() {
         List<MehtaObjectRole> mehtaObjects = new ArrayList();
-        for (Relationship rel : node.getRelationships(Direction.OUTGOING)) {
+        for (Relationship rel : getRelationships()) {
             Node node = rel.getEndNode();
             String roleType = rel.getType().name();
             MehtaObject mehtaObject = buildMehtaObject(node);
@@ -84,13 +84,12 @@ class Neo4jMehtaEdge extends Neo4jMehtaObject implements MehtaEdge {
 
     @Override
     public void delete() {
-        // delete all the node's relationships
-        // FIXME: mehta edges connected with this edge gets truncated
-        for (Relationship rel : node.getRelationships()) {
+        // delete the 2 relationships making up this mehta edge
+        for (Relationship rel : getRelationships()) {
             rel.delete();
         }
-        //
-        node.delete();
+        // delete the auxiliary node
+        super.delete();
     }
 
 
@@ -114,7 +113,14 @@ class Neo4jMehtaEdge extends Neo4jMehtaObject implements MehtaEdge {
     // ------------------------------------------------------------------------------------------------- Private Methods
 
     /**
-     * Custom stringifier to avoid endless recursion.
+     * Returns the 2 relationships making up this mehta edge.
+     */
+    private Iterable<Relationship> getRelationships() {
+        return node.getRelationships(Direction.OUTGOING);
+    }
+
+    /**
+     * Custom stringifier to avoid endless recursion in case an error occurs in getMehtaObjects().
      */
     private String toString(List<MehtaObjectRole> mehtaObjects) {
         StringBuilder str = new StringBuilder("mehta edge " + getId());

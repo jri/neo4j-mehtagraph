@@ -115,5 +115,11 @@ public interface MehtaObject {
 
     // === Deletion ===
 
+    /**
+     * Deletes this mehta object.
+     * Deletion is only possible if the mehta object is not connected to any other mehta objects.
+     *
+     * @throws  RuntimeException    If this mehta object is connected to other mehta objects.
+     */
     void delete();
 }

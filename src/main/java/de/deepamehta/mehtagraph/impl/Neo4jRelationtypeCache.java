@@ -29,7 +29,7 @@ class Neo4jRelationtypeCache {
     RelationshipType get(String typeName) {
         RelationshipType relType = relTypeCache.get(typeName);
         if (relType == null) {
-            logger.info("### Creating Neo4j relationship type \"" + typeName + "\" dynamically");
+            logger.fine("Creating Neo4j relationship type \"" + typeName + "\" dynamically");
             relType = DynamicRelationshipType.withName(typeName);
             relTypeCache.put(typeName, relType);
         }
