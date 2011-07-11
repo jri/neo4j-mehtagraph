@@ -68,5 +68,20 @@
                 </configuration>
             </plugin>
         </plugins>
+        <extensions>
+            <!-- Enabling the use of SCP -->
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh-external</artifactId>
+                <version>1.0</version>
+            </extension>
+        </extensions>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>deepamehta-public-repository</id>
+            <url>scpexe://www.deepamehta.de/var/lib/tomcat-6/webapps/ROOT/maven2</url>
+        </repository>
+    </distributionManagement>
 </project>
