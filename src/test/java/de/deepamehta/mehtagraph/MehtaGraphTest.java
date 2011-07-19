@@ -44,10 +44,10 @@ public class MehtaGraphTest {
 
     @Test
     public void testTraversal() {
-        MehtaNode node = hg.getMehtaNode("uri", "dm3.core.data_type");
+        MehtaNode node = hg.getMehtaNode("uri", "dm4.core.data_type");
         MehtaNode topicType = getType(node);
         logger.info("### topicType=" + topicType);
-        assertEquals("dm3.core.topic_type", topicType.getString("uri"));
+        assertEquals("dm4.core.topic_type", topicType.getString("uri"));
         assertEquals("Topic Type", topicType.getString("value"));
     }
 
@@ -68,24 +68,24 @@ public class MehtaGraphTest {
     // ------------------------------------------------------------------------------------------------- Private Methods
 
     MehtaNode getType(MehtaNode node) {
-        return node.getConnectedMehtaNode("dm3.core.instance", "dm3.core.type").getMehtaNode();
+        return node.getConnectedMehtaNode("dm4.core.instance", "dm4.core.type").getMehtaNode();
     }
 
     private void setupContent() {
         MehtaGraphTransaction tx = hg.beginTx();
         try {
             MehtaNode node1 = hg.createMehtaNode();
-            node1.setString("uri", "dm3.core.topic_type");
+            node1.setString("uri", "dm4.core.topic_type");
             node1.setString("value", "Topic Type");
-            node1.indexAttribute(MehtaGraphIndexMode.KEY, "uri", "dm3.core.topic_type", null);
+            node1.indexAttribute(MehtaGraphIndexMode.KEY, "uri", "dm4.core.topic_type", null);
             //
             MehtaNode node2 = hg.createMehtaNode();
-            node2.setString("uri", "dm3.core.data_type");
+            node2.setString("uri", "dm4.core.data_type");
             node2.setString("value", "Data Type");
-            node2.indexAttribute(MehtaGraphIndexMode.KEY, "uri", "dm3.core.data_type", null);
+            node2.indexAttribute(MehtaGraphIndexMode.KEY, "uri", "dm4.core.data_type", null);
             //
-            MehtaEdge edge = hg.createMehtaEdge(new MehtaObjectRole(node1, "dm3.core.type"),
-                                                new MehtaObjectRole(node2, "dm3.core.instance"));
+            MehtaEdge edge = hg.createMehtaEdge(new MehtaObjectRole(node1, "dm4.core.type"),
+                                                new MehtaObjectRole(node2, "dm4.core.instance"));
             //
             String text1 = "DeepaMehta is a platform for collaboration and knowledge management";
             String text2 = "Lead developer of DeepaMehta is Jörg Richter";
