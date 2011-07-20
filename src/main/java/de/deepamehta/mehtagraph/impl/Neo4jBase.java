@@ -8,12 +8,12 @@ import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.traversal.Evaluation;
 import org.neo4j.graphdb.traversal.Evaluator;
 import org.neo4j.graphdb.traversal.TraversalDescription;
-// FIXME: new index API doesn't work with OSGi
-// import org.neo4j.graphdb.index.Index;
+// ### FIXME: new index API doesn't work with OSGi
+import org.neo4j.graphdb.index.Index;
 //
-// Using old index API instead
-import org.neo4j.index.IndexService;
-import org.neo4j.index.lucene.LuceneFulltextQueryIndexService;
+// ### Using old index API instead
+// ### import org.neo4j.index.IndexService;
+// ### import org.neo4j.index.lucene.LuceneFulltextQueryIndexService;
 import org.neo4j.kernel.Traversal;
 import org.neo4j.kernel.Uniqueness;
 
@@ -38,13 +38,13 @@ class Neo4jBase {
 
     protected final GraphDatabaseService neo4j;
     protected Neo4jRelationtypeCache relTypeCache;
-    // FIXME: new index API doesn't work with OSGi
-    // protected Index<Node> exactIndex;
-    // protected Index<Node> fulltextIndex;
+    // ### FIXME: new index API doesn't work with OSGi
+    protected Index<Node> exactIndex;
+    protected Index<Node> fulltextIndex;
     //
-    // Using old index API instead
-    protected IndexService exactIndex;
-    protected LuceneFulltextQueryIndexService fulltextIndex;
+    // ### Using old index API instead
+    // ### protected IndexService exactIndex;
+    // ### protected LuceneFulltextQueryIndexService fulltextIndex;
 
     // ---------------------------------------------------------------------------------------------------- Constructors
 
@@ -58,15 +58,6 @@ class Neo4jBase {
         this.exactIndex = base.exactIndex;
         this.fulltextIndex = base.fulltextIndex;
     }
-
-    // Neo4jBase(GraphDatabaseService neo4j, Neo4jRelationtypeCache relTypeCache,
-    //          IndexService exactIndex, LuceneFulltextQueryIndexService fulltextIndex
-    //          /* FIXME: Index exactIndex, Index fulltextIndex */) {
-    //    this.neo4j = neo4j;
-    //    this.relTypeCache = relTypeCache;
-    //    this.exactIndex = exactIndex;
-    //    this.fulltextIndex = fulltextIndex;
-    // }
 
     // ----------------------------------------------------------------------------------------------- Protected Methods
 

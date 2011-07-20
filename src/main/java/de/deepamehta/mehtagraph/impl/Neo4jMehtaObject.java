@@ -142,33 +142,39 @@ class Neo4jMehtaObject extends Neo4jBase implements MehtaObject {
             return;
         } else if (indexMode == MehtaGraphIndexMode.KEY) {
             if (oldValue != null) {
-                // FIXME: new index API doesn't work with OSGi
-                // exactIndex.remove(node, indexKey, oldValue);             // remove old
-                exactIndex.removeIndex(node, indexKey, oldValue);           // remove old
+                // ### FIXME: new index API doesn't work with OSGi
+                exactIndex.remove(node, indexKey, oldValue);             // remove old
+                // ### Using old index API instead
+                // ### exactIndex.removeIndex(node, indexKey, oldValue);           // remove old
             }
-            // FIXME: new index API doesn't work with OSGi
-            // exactIndex.add(node, indexKey, value);                       // index new
-            exactIndex.index(node, indexKey, value);                        // index new
+            // ### FIXME: new index API doesn't work with OSGi
+            exactIndex.add(node, indexKey, value);                       // index new
+            // ### Using old index API instead
+            // ### exactIndex.index(node, indexKey, value);                        // index new
         } else if (indexMode == MehtaGraphIndexMode.FULLTEXT) {
             // Note: all the topic's FULLTEXT properties are indexed under the same key ("default").
             // So, when removing from index we must explicitley give the old value.
             if (oldValue != null) {
-                // FIXME: new index API doesn't work with OSGi
-                // fulltextIndex.remove(node, KEY_FULLTEXT, oldValue);      // remove old
-                fulltextIndex.removeIndex(node, KEY_FULLTEXT, oldValue);    // remove old
+                // ### FIXME: new index API doesn't work with OSGi
+                fulltextIndex.remove(node, KEY_FULLTEXT, oldValue);      // remove old
+                // ### Using old index API instead
+                // ### fulltextIndex.removeIndex(node, KEY_FULLTEXT, oldValue);    // remove old
             }
-            // FIXME: new index API doesn't work with OSGi
-            // fulltextIndex.add(node, KEY_FULLTEXT, value);                // index new
-            fulltextIndex.index(node, KEY_FULLTEXT, value);                 // index new
+            // ### FIXME: new index API doesn't work with OSGi
+            fulltextIndex.add(node, KEY_FULLTEXT, value);                // index new
+            // ### Using old index API instead
+            // ### fulltextIndex.index(node, KEY_FULLTEXT, value);                 // index new
         } else if (indexMode == MehtaGraphIndexMode.FULLTEXT_KEY) {
             if (oldValue != null) {
-                // FIXME: new index API doesn't work with OSGi
-                // fulltextIndex.remove(node, indexKey, oldValue);          // remove old
-                fulltextIndex.removeIndex(node, indexKey, oldValue);        // remove old
+                // ### FIXME: new index API doesn't work with OSGi
+                fulltextIndex.remove(node, indexKey, oldValue);          // remove old
+                // ### Using old index API instead
+                // ### fulltextIndex.removeIndex(node, indexKey, oldValue);        // remove old
             }
-            // FIXME: new index API doesn't work with OSGi
-            // fulltextIndex.add(node, indexKey, value);                    // index new
-            fulltextIndex.index(node, indexKey, value);                     // index new
+            // ### FIXME: new index API doesn't work with OSGi
+            fulltextIndex.add(node, indexKey, value);                    // index new
+            // ### Using old index API instead
+            // ### fulltextIndex.index(node, indexKey, value);                     // index new
         } else {
             throw new RuntimeException("Index mode \"" + indexMode + "\" not implemented");
         }
