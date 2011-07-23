@@ -4,7 +4,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <name>Neo4j - Mehtagraph</name>
+    <name>Neo4j Mehtagraph</name>
     <groupId>de.deepamehta</groupId>
     <artifactId>neo4j-mehtagraph</artifactId>
     <version>0.7-SNAPSHOT</version>
@@ -15,9 +15,14 @@
     </properties>
 
     <dependencies>
-        <dependency>
+        <!--dependency>
             <groupId>org.neo4j</groupId>
             <artifactId>neo4j</artifactId>
+            <version>1.4</version>
+        </dependency-->
+        <dependency>
+            <groupId>org.neo4j</groupId>
+            <artifactId>neo4j-kernel</artifactId>
             <version>1.4</version>
         </dependency>
         <!-- FIXME: new index API doesn't work with OSGi -->
@@ -32,6 +37,18 @@
             <artifactId>neo4j-index</artifactId>
             <version>1.2-1.2</version>
         </dependency-->
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>4.2.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <version>4.2.0</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -58,10 +75,16 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>
-                            de.deepamehta.mehtagraph,
-                            de.deepamehta.mehtagraph.impl
-                        </Export-Package>
+                        <Bundle-Activator>
+                            de.deepamehta.mehtagraph.osgi.Activator
+                        </Bundle-Activator>
+                        <!--Export-Package>
+                            de.deepamehta.mehtagraph
+                        </Export-Package-->
+                        <!--Export-Package>org.neo4j.*;version="1.4",*</Export-Package-->
+                        <Import-Package>!javax.transaction.*,!com.sun.*,!sun.misc.*,!org.junit.*,!junit.*,*;</Import-Package>
+                        <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
+                        <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>
             </plugin>
