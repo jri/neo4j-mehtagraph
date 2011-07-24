@@ -4,7 +4,7 @@ Neo4j Mehtagraph
 
 A persistence layer for Mehtagraphs on-top of [Neo4j](http://neo4j.org/).
 
-We call it a Mehtagraph because it is a generalization of a graph: edges can not only connect nodes, but other edges as well! That is, an edge can be a player in an edge, just like nodes usually. Edges are still binary. So, an edge connects either 2 nodes, a node and an edge, or 2 edges.
+We call it a Mehtagraph because it is a generalization of a graph: edges can not only connect nodes, but other edges as well! That is, an edge can be a player in an edge, just like nodes usually. Edges are still binary (so its not a *hypergraph*): an edge connects either 2 nodes, a node and an edge, or 2 edges.
 
 Further features of this implementation:
 
@@ -19,17 +19,22 @@ When do you might want a Mehtagraph? In geneal, when you need to make the edges 
 * Sorting edges. A specific order of a set of edges can be represented by connecting them with "sequence" edges, each with a "predecessor" and "successor" end (= role types).
 * Sub-graphs. A sub-graph can be represented as a node that connects the nodes and edges that belong to it. A node/edge can be involved in any number of sub-graphs.
 
-Neo4j Mehtagraph is utilized as the persistence layer for [DeepaMehta 4.0](https://github.com/jri/deepamehta). However, it can be used for other applications as well.
+Neo4j Mehtagraph is utilized as the persistence layer for [DeepaMehta 4.0](https://github.com/jri/deepamehta).  
+However, it can be used for other applications as well.
 
 
 Are you a mathematician?
 ------------------------
 
-Is a graph where an edge can link to other edges a known structure? What's its name?
+Is a graph where an edge can connect other edges a known structure? What's its name?
 
 
 Version History
 ---------------
+
+**v0.7** -- Jul 24, 2011
+
+* Bug fix in edge deletion (no "Graph inconsistency" error anymore)
 
 **v0.6** -- Jun 24, 2011
 
@@ -66,4 +71,4 @@ Version History
 
 ------------
 Jörg Richter  
-Jun 24, 2011
+July 24, 2011
