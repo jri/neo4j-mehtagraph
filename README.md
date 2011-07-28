@@ -32,6 +32,11 @@ Is a graph where an edge can connect other edges a known structure? What's its n
 Version History
 ---------------
 
+**v0.8** -- Jul 28, 2011
+
+* More flexible role type filter
+* API provides factory method (Neo4j is no longer exposed to the application developer)
+
 **v0.7** -- Jul 24, 2011
 
 * Bug fix in edge deletion (no "Graph inconsistency" error anymore)
@@ -71,4 +76,4 @@ Version History
 
 ------------
 Jörg Richter  
-July 24, 2011
+July 28, 2011
