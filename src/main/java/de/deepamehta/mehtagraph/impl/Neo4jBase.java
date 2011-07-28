@@ -181,10 +181,13 @@ class Neo4jBase {
             .evaluator(new DirectionEvaluator())
             .evaluator(evaluator1)
             .evaluator(evaluator2)
-            .uniqueness(Uniqueness.RELATIONSHIP_GLOBAL);
-        // Note: we need to traverse a node more than once. Consider this case: mehta node A
+            .uniqueness(Uniqueness.RELATIONSHIP_PATH);
+        // Note 1: we need to traverse a node more than once. Consider this case: mehta node A
         // is connected with mehta node B via mehta edge C and A is connected to C as well.
         // (default uniqueness is not RELATIONSHIP_GLOBAL, but probably NODE_GLOBAL).
+        //
+        // Note 2: we also need to traverse a relationship more than once! Consider this case:
+        // mehta node A is connected with itself (so, RELATIONSHIP_GLOBAL doesn't suit).
     }
 
     // ---
