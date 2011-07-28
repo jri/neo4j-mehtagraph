@@ -61,8 +61,7 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            de.deepamehta.mehtagraph,
-                            de.deepamehta.mehtagraph.impl
+                            de.deepamehta.mehtagraph
                         </Export-Package>
                     </instructions>
                 </configuration>

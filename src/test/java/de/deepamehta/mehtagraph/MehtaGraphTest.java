@@ -1,7 +1,5 @@
 package de.deepamehta.mehtagraph;
 
-import de.deepamehta.mehtagraph.impl.Neo4jMehtaGraph;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import org.junit.After;
@@ -9,12 +7,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.index.Index;
-import org.neo4j.helpers.collection.MapUtil;
-import org.neo4j.kernel.EmbeddedGraphDatabase;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,9 +28,7 @@ public class MehtaGraphTest {
 
     @Before
     public void setup() {
-        GraphDatabaseService neo4j = new EmbeddedGraphDatabase(createTempDirectory("neo4j"));
-        mg = new Neo4jMehtaGraph(neo4j);
-        //
+        mg = MehtaGraphFactory.createInstance(createTempDirectory("neo4j"));
         setupContent();
     }
 
