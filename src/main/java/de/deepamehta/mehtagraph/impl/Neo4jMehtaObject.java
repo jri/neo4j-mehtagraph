@@ -206,7 +206,7 @@ class Neo4jMehtaObject extends Neo4jBase implements MehtaObject {
 
     @Override
     public Set<ConnectedMehtaNode> getConnectedMehtaNodes(String myRoleType, String othersRoleType) {
-        return new TraveralResultBuilder(node, createTraversalDescription(myRoleType, othersRoleType)) {
+        return new TraveralResultBuilder(node, traverseToMehtaNodes(myRoleType, othersRoleType)) {
             @Override
             Object buildResult(Node connectedNode, Node auxiliaryNode) {
                 return new ConnectedMehtaNode(buildMehtaNode(connectedNode), buildMehtaEdge(auxiliaryNode));
@@ -232,7 +232,7 @@ class Neo4jMehtaObject extends Neo4jBase implements MehtaObject {
 
     @Override
     public Set<ConnectedMehtaEdge> getConnectedMehtaEdges(String myRoleType, String othersRoleType) {
-        return new TraveralResultBuilder(node, createTraversalDescription(myRoleType, othersRoleType)) {
+        return new TraveralResultBuilder(node, traverseToMehtaEdges(myRoleType, othersRoleType)) {
             @Override
             Object buildResult(Node connectedNode, Node auxiliaryNode) {
                 return new ConnectedMehtaEdge(buildMehtaEdge(connectedNode), buildMehtaEdge(auxiliaryNode));
@@ -265,10 +265,6 @@ class Neo4jMehtaObject extends Neo4jBase implements MehtaObject {
         return builder.toString();
     }
 
-    protected final RelationshipType getRelationshipType(String typeName) {
-        return relTypeCache.get(typeName);
-    }
-
 
 
     // ----------------------------------------------------------------------------------------- Package Private Methods
@@ -280,66 +276,6 @@ class Neo4jMehtaObject extends Neo4jBase implements MehtaObject {
 
 
     // ------------------------------------------------------------------------------------------------- Private Methods
-
-    // === Traversal ===
-
-    /**
-     * The created traversal description allows to find connected mehta nodes/mehta edges that
-     * are connected to the start node/edge via the given role types.
-     * <p>
-     * Called from {@link #getConnectedMehtaNodes} and {@link #getConnectedMehtaEdges}
-     *
-     * @param   myRoleType      Pass <code>null</code> to switch role type filter off.
-     * @param   othersRoleType  Pass <code>null</code> to switch role type filter off.
-     */
-    private TraversalDescription createTraversalDescription(String myRoleType, String othersRoleType) {
-        TraversalDescription desc = Traversal.description().uniqueness(Uniqueness.RELATIONSHIP_GLOBAL);
-        // Note: we need to traverse a node more than once. Consider this case: mehta node A
-        // is connected with mehta node B via mehta edge C and A is connected to C as well.
-        // (default uniqueness is not RELATIONSHIP_GLOBAL, but probably NODE_GLOBAL).
-        if (myRoleType != null && othersRoleType != null) {
-            return desc.evaluator(new RoleTypeEvaluator(myRoleType, othersRoleType))
-                       .relationships(getRelationshipType(myRoleType), Direction.INCOMING)
-                       .relationships(getRelationshipType(othersRoleType), Direction.OUTGOING);
-        } else if (myRoleType == null && othersRoleType == null) {
-            // FIXME: with role type filter switched off only node-to-node traversal is currently supported.
-            return desc.evaluator(new AuxiliaryEvaluator());
-        } else {
-            throw new IllegalArgumentException("Both or none role types must be set");
-        }
-    }
-
-    private class RoleTypeEvaluator implements Evaluator {
-
-        private RelationshipType myRoleType;
-        private RelationshipType othersRoleType;
-
-        private RoleTypeEvaluator(String myRoleType, String othersRoleType) {
-            this.myRoleType = getRelationshipType(myRoleType);
-            this.othersRoleType = getRelationshipType(othersRoleType);
-        }
-
-        @Override
-        public Evaluation evaluate(Path path) {
-            boolean includes = true;
-            boolean continues = true;
-            Relationship rel = path.lastRelationship();
-            Node node = path.endNode();
-            if (path.length() == 1) {
-                if (!rel.isType(myRoleType) || rel.getStartNode().getId() != node.getId()) {
-                    continues = false;
-                }
-            } else if (path.length() == 2) {
-                if (!rel.isType(othersRoleType) || rel.getEndNode().getId() != node.getId()) {
-                    includes = false;
-                }
-            }
-            //
-            includes = includes && path.length() == 2;
-            continues = continues && path.length() < 2;
-            return Evaluation.of(includes, continues);
-        }
-    }
 
     // === Helper ===
 

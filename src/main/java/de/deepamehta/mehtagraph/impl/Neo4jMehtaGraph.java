@@ -126,7 +126,7 @@ public class Neo4jMehtaGraph extends Neo4jBase implements MehtaGraph {
 
     @Override
     public Set<MehtaEdge> getMehtaEdges(long node1Id, long node2Id) {
-        return new TraveralResultBuilder(neo4j.getNodeById(node1Id), createTraversalDescription(node2Id)) {
+        return new TraveralResultBuilder(neo4j.getNodeById(node1Id), traverseToMehtaNode(node2Id)) {
             @Override
             Object buildResult(Node connectedNode, Node auxiliaryNode) {
                 return buildMehtaEdge(auxiliaryNode);

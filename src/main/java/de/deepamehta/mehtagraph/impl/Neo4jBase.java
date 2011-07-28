@@ -5,15 +5,17 @@ import de.deepamehta.mehtagraph.MehtaObject;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Path;
+import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.traversal.Evaluation;
 import org.neo4j.graphdb.traversal.Evaluator;
 import org.neo4j.graphdb.traversal.TraversalDescription;
-// FIXME: new index API doesn't work with OSGi
+// FIXME: new index API of Neo4j 1.3 and 1.4 doesn't work with OSGi
 // import org.neo4j.graphdb.index.Index;
-//
 // Using old index API instead
 import org.neo4j.index.IndexService;
 import org.neo4j.index.lucene.LuceneFulltextQueryIndexService;
+//
 import org.neo4j.kernel.Traversal;
 import org.neo4j.kernel.Uniqueness;
 
@@ -59,15 +61,6 @@ class Neo4jBase {
         this.fulltextIndex = base.fulltextIndex;
     }
 
-    // Neo4jBase(GraphDatabaseService neo4j, Neo4jRelationtypeCache relTypeCache,
-    //          IndexService exactIndex, LuceneFulltextQueryIndexService fulltextIndex
-    //          /* FIXME: Index exactIndex, Index fulltextIndex */) {
-    //    this.neo4j = neo4j;
-    //    this.relTypeCache = relTypeCache;
-    //    this.exactIndex = exactIndex;
-    //    this.fulltextIndex = fulltextIndex;
-    // }
-
     // ----------------------------------------------------------------------------------------------- Protected Methods
 
     protected final Neo4jMehtaNode buildMehtaNode(Node node) {
@@ -97,6 +90,10 @@ class Neo4jBase {
 
     // ---
 
+    protected final RelationshipType getRelationshipType(String typeName) {
+        return relTypeCache.get(typeName);
+    }
+
     protected final boolean isAuxiliaryNode(Node node) {
         return (Boolean) node.getProperty(KEY_IS_MEHTA_EDGE, false);
     }
@@ -106,55 +103,45 @@ class Neo4jBase {
     // === Traversal ===
 
     /**
-     * The created traversal description allows to find all mehta edges between two mehta nodes.
+     * The created traversal description allows to find mehta nodes that
+     * are connected to the start node/edge via the given role types.
+     * <p>
+     * Called from {@link Neo4jMehtaObject#getConnectedMehtaNodes}.
+     *
+     * @param   myRoleType      Pass <code>null</code> to switch role type filter off.
+     * @param   othersRoleType  Pass <code>null</code> to switch role type filter off.
+     */
+    protected final TraversalDescription traverseToMehtaNodes(String myRoleType, String othersRoleType) {
+        return createTraversalDescription(new RoleTypeEvaluator(myRoleType, othersRoleType),
+                                          new AuxiliaryEvaluator(false));
+    }
+
+    /**
+     * The created traversal description allows to find mehta edges that
+     * are connected to the start node/edge via the given role types.
+     * <p>
+     * Called from {@link Neo4jMehtaObject#getConnectedMehtaEdges}.
+     *
+     * @param   myRoleType      Pass <code>null</code> to switch role type filter off.
+     * @param   othersRoleType  Pass <code>null</code> to switch role type filter off.
+     */
+    protected final TraversalDescription traverseToMehtaEdges(String myRoleType, String othersRoleType) {
+        return createTraversalDescription(new RoleTypeEvaluator(myRoleType, othersRoleType),
+                                          new AuxiliaryEvaluator(true));
+    }
+
+    /**
+     * The created traversal description allows to find all mehta edges between
+     * the the start node/edge and the given node.
      * <p>
      * Called from {@link Neo4jMehtaGraph#getMehtaEdges}
      */
-    protected final TraversalDescription createTraversalDescription(long connectedNodeId) {
-        return Traversal.description()
-            .evaluator(new AuxiliaryEvaluator())
-            .evaluator(new ConnectedNodeEvaluator(connectedNodeId))
-            .uniqueness(Uniqueness.RELATIONSHIP_GLOBAL);
-        // Note: we need to traverse a node more than once. Consider this case: mehta node A
-        // is connected with mehta node B via mehta edge C and A is connected to C as well.
-        // (default uniqueness is not RELATIONSHIP_GLOBAL, but probably NODE_GLOBAL).
+    protected final TraversalDescription traverseToMehtaNode(long nodeId) {
+        return createTraversalDescription(new ConnectedNodeEvaluator(nodeId),
+                                          new AuxiliaryEvaluator(false));
     }
 
     // ---
-
-    protected class AuxiliaryEvaluator implements Evaluator {
-
-        @Override
-        public Evaluation evaluate(Path path) {
-            Node node = path.endNode();
-            // sanity check
-            if (path.length() == 1) {
-                if (!isAuxiliaryNode(node)) {
-                    throw new RuntimeException("jri doesn't understand Neo4j traversal or your graph is corrupted");
-                }
-            }
-            //
-            boolean includes = path.length() == 2 && !isAuxiliaryNode(node);
-            boolean continues = path.length() < 2;
-            return Evaluation.of(includes, continues);
-        }
-    }
-
-    private class ConnectedNodeEvaluator implements Evaluator {
-
-        private long connectedNodeId;
-
-        private ConnectedNodeEvaluator(long connectedNodeId) {
-            this.connectedNodeId = connectedNodeId;
-        }
-
-        @Override
-        public Evaluation evaluate(Path path) {
-            boolean includes = path.endNode().getId() == connectedNodeId;
-            boolean continues = true;
-            return Evaluation.of(includes, continues);
-        }
-    }
 
     protected abstract class TraveralResultBuilder {
 
@@ -177,6 +164,110 @@ class Neo4jBase {
 
         Set getResult() {
             return result;
+        }
+    }
+
+    // ------------------------------------------------------------------------------------------------- Private Methods
+
+
+
+    // === Traversal ===
+
+    /**
+     * Describes one mehta edge hop.
+     */
+    private TraversalDescription createTraversalDescription(Evaluator evaluator1, Evaluator evaluator2) {
+        return Traversal.description()
+            .evaluator(new DirectionEvaluator())
+            .evaluator(evaluator1)
+            .evaluator(evaluator2)
+            .uniqueness(Uniqueness.RELATIONSHIP_GLOBAL);
+        // Note: we need to traverse a node more than once. Consider this case: mehta node A
+        // is connected with mehta node B via mehta edge C and A is connected to C as well.
+        // (default uniqueness is not RELATIONSHIP_GLOBAL, but probably NODE_GLOBAL).
+    }
+
+    // ---
+
+    private class DirectionEvaluator implements Evaluator {
+
+        @Override
+        public Evaluation evaluate(Path path) {
+            boolean includes = false;
+            boolean continues = false;
+            //
+            Relationship rel = path.lastRelationship();
+            Node node = path.endNode();
+            if (path.length() == 1) {
+                continues = rel.getStartNode().getId() == node.getId();
+            } else if (path.length() == 2) {
+                includes = rel.getEndNode().getId() == node.getId();
+            }
+            //
+            return Evaluation.of(includes, continues);
+        }
+    }
+
+    private class RoleTypeEvaluator implements Evaluator {
+
+        private RelationshipType myRoleType;
+        private RelationshipType othersRoleType;
+
+        private RoleTypeEvaluator(String myRoleType, String othersRoleType) {
+            if (myRoleType != null) {
+                this.myRoleType = getRelationshipType(myRoleType);
+            }
+            if (othersRoleType != null) {
+                this.othersRoleType = getRelationshipType(othersRoleType);
+            }
+        }
+
+        @Override
+        public Evaluation evaluate(Path path) {
+            boolean includes = true;
+            boolean continues = true;
+            //
+            Relationship rel = path.lastRelationship();
+            Node node = path.endNode();
+            if (path.length() == 1) {
+                continues = myRoleType == null || rel.isType(myRoleType);
+            } else if (path.length() == 2) {
+                includes = othersRoleType == null || rel.isType(othersRoleType);
+            }
+            //
+            return Evaluation.of(includes, continues);
+        }
+    }
+
+    private class ConnectedNodeEvaluator implements Evaluator {
+
+        private long connectedNodeId;
+
+        private ConnectedNodeEvaluator(long connectedNodeId) {
+            this.connectedNodeId = connectedNodeId;
+        }
+
+        @Override
+        public Evaluation evaluate(Path path) {
+            boolean includes = path.length() == 2 && path.endNode().getId() == connectedNodeId;
+            boolean continues = true;
+            return Evaluation.of(includes, continues);
+        }
+    }
+
+    private class AuxiliaryEvaluator implements Evaluator {
+
+        private boolean isAuxiliary;
+
+        private AuxiliaryEvaluator(boolean isAuxiliary) {
+            this.isAuxiliary = isAuxiliary;
+        }
+
+        @Override
+        public Evaluation evaluate(Path path) {
+            boolean includes = path.length() == 2 && isAuxiliaryNode(path.endNode()) == isAuxiliary;
+            boolean continues = true;
+            return Evaluation.of(includes, continues);
         }
     }
 }
