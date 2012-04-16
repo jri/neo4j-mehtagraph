@@ -56,19 +56,17 @@ public class Neo4jMehtaGraph extends Neo4jBase implements MehtaGraph {
 
 
 
-    // === MehtaGraph Implementation ===
+    // *********************************
+    // *** MehtaGraph Implementation ***
+    // *********************************
+
+
+
+    // === Mehta Nodes ===
 
     @Override
     public MehtaNode createMehtaNode() {
         return buildMehtaNode(neo4j.createNode());
-    }
-
-    @Override
-    public MehtaEdge createMehtaEdge(MehtaObjectRole object1, MehtaObjectRole object2) {
-        Neo4jMehtaEdge mehtaEdge = createMehtaEdge();
-        mehtaEdge.addMehtaObject(object1);
-        mehtaEdge.addMehtaObject(object2);
-        return mehtaEdge;
     }
 
     // ---
@@ -117,12 +115,26 @@ public class Neo4jMehtaGraph extends Neo4jBase implements MehtaGraph {
         return nodes;
     }
 
+
+
+    // === Mehta Edges ===
+
+    @Override
+    public MehtaEdge createMehtaEdge(MehtaObjectRole object1, MehtaObjectRole object2) {
+        Neo4jMehtaEdge mehtaEdge = createMehtaEdge();
+        mehtaEdge.addMehtaObject(object1);
+        mehtaEdge.addMehtaObject(object2);
+        return mehtaEdge;
+    }
+
     // ---
 
     @Override
     public MehtaEdge getMehtaEdge(long id) {
         return buildMehtaEdge(neo4j.getNodeById(id));
     }
+
+    // ---
 
     @Override
     public Set<MehtaEdge> getMehtaEdges(long node1Id, long node2Id) {
@@ -134,7 +146,20 @@ public class Neo4jMehtaGraph extends Neo4jBase implements MehtaGraph {
         }.getResult();
     }
 
-    // ---
+    @Override
+    public Set<MehtaEdge> getMehtaEdges(long node1Id, long node2Id, String roleType1, String roleType2) {
+        return new TraveralResultBuilder(neo4j.getNodeById(node1Id), traverseToMehtaNode(node2Id, roleType1,
+                                                                                                  roleType2)) {
+            @Override
+            Object buildResult(Node connectedNode, Node auxiliaryNode) {
+                return buildMehtaEdge(auxiliaryNode);
+            }
+        }.getResult();
+    }
+
+
+
+    // === Misc ===
 
     @Override
     public MehtaGraphTransaction beginTx() {

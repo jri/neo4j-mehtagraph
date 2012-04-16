@@ -5,27 +5,34 @@ import java.util.Set;
 
 
 
+/**
+ * The MehtaGraph service.
+ * It provides methods for creation and retrieval of {@link MehtaNode}s and {@link MehtaEdge}s.
+ * <p>
+ * To obtain a MehtaGraph service instance call {@link MehtaGraphFactory#createInstance}.
+ */
 public interface MehtaGraph {
 
-    MehtaNode createMehtaNode();
-    MehtaEdge createMehtaEdge(MehtaObjectRole object1, MehtaObjectRole object2);
+    // === Mehta Nodes ===
 
-    // ---
+    MehtaNode createMehtaNode();
 
     MehtaNode getMehtaNode(long id);
     MehtaNode getMehtaNode(String key, Object value);
 
-    // ---
-
     List<MehtaNode> queryMehtaNodes(Object value);
     List<MehtaNode> queryMehtaNodes(String key, Object value);
 
-    // ---
+    // === Mehta Edges ===
+
+    MehtaEdge createMehtaEdge(MehtaObjectRole object1, MehtaObjectRole object2);
 
     MehtaEdge getMehtaEdge(long id);
-    Set<MehtaEdge> getMehtaEdges(long node1Id, long node2Id);
 
-    // ---
+    Set<MehtaEdge> getMehtaEdges(long node1Id, long node2Id);
+    Set<MehtaEdge> getMehtaEdges(long node1Id, long node2Id, String roleType1, String roleType2);
+
+    // === Misc ===
 
     MehtaGraphTransaction beginTx();
     void shutdown();

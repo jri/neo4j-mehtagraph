@@ -4,6 +4,11 @@ import java.util.List;
 
 
 
+/**
+ * An edge in a Mehtagraph: a connection between 2 {@link MehtaObject}s, each one qualified by a role type.
+ *
+ * @see  MehtaObjectRole
+ */
 public interface MehtaEdge extends MehtaObject {
 
     List<MehtaObjectRole> getMehtaObjects();

@@ -134,10 +134,27 @@ class Neo4jBase {
      * The created traversal description allows to find all mehta edges between
      * the the start node/edge and the given node.
      * <p>
-     * Called from {@link Neo4jMehtaGraph#getMehtaEdges}
+     * Called from {@link Neo4jMehtaGraph#getMehtaEdges(long, long)}
      */
     protected final TraversalDescription traverseToMehtaNode(long nodeId) {
         return createTraversalDescription(new ConnectedNodeEvaluator(nodeId),
+                                          new AuxiliaryEvaluator(false));
+    }
+
+    /**
+     * The created traversal description allows to find all mehta edges between
+     * the the start node/edge and the given node.
+     * The created traversal description allows to find mehta nodes that
+     * are connected to the start node/edge via the given role types.
+     * <p>
+     * Called from {@link Neo4jMehtaGraph#getMehtaEdges(long, long, String, String)}
+     *
+     * @param   myRoleType      Pass <code>null</code> to switch role type filter off.
+     * @param   othersRoleType  Pass <code>null</code> to switch role type filter off.
+     */
+    protected final TraversalDescription traverseToMehtaNode(long nodeId, String myRoleType, String othersRoleType) {
+        return createTraversalDescription(new ConnectedNodeEvaluator(nodeId),
+                                          new RoleTypeEvaluator(myRoleType, othersRoleType),
                                           new AuxiliaryEvaluator(false));
     }
 
@@ -147,8 +164,8 @@ class Neo4jBase {
 
         private Set result = new HashSet();
 
-        protected TraveralResultBuilder(Node node, TraversalDescription desc) {
-            for (Path path : desc.traverse(node)) {
+        protected TraveralResultBuilder(Node startNode, TraversalDescription desc) {
+            for (Path path : desc.traverse(startNode)) {
                 // sanity check
                 if (path.length() != 2) {
                     throw new RuntimeException("jri doesn't understand Neo4j traversal");
@@ -176,11 +193,9 @@ class Neo4jBase {
     /**
      * Describes one mehta edge hop.
      */
-    private TraversalDescription createTraversalDescription(Evaluator evaluator1, Evaluator evaluator2) {
-        return Traversal.description()
+    private TraversalDescription createTraversalDescription(Evaluator... evaluators) {
+        TraversalDescription description = Traversal.description()
             .evaluator(new DirectionEvaluator())
-            .evaluator(evaluator1)
-            .evaluator(evaluator2)
             .uniqueness(Uniqueness.RELATIONSHIP_PATH);
         // Note 1: we need to traverse a node more than once. Consider this case: mehta node A
         // is connected with mehta node B via mehta edge C and A is connected to C as well.
@@ -188,6 +203,12 @@ class Neo4jBase {
         //
         // Note 2: we also need to traverse a relationship more than once! Consider this case:
         // mehta node A is connected with itself (so, RELATIONSHIP_GLOBAL doesn't suit).
+        //
+        for (Evaluator evaluator : evaluators) {
+            description = description.evaluator(evaluator);
+        }
+        //
+        return description;
     }
 
     // ---

@@ -2,6 +2,9 @@ package de.deepamehta.mehtagraph;
 
 
 
+/**
+ * One end of a {@MehtaEdge}: a pair of a {@link MehtaObject} and a role type (String).
+ */
 public class MehtaObjectRole {
 
     // ---------------------------------------------------------------------------------------------- Instance Variables

@@ -4,6 +4,14 @@ import java.util.Set;
 
 
 
+/**
+ * The common base of {@link MehtaNode}s and {@link MehtaEdge}s.
+ *
+ * There are methods for:
+ *  - Working with attributes (getting, setting, indexing)
+ *  - Traversal
+ *  - Object Deletion
+ */
 public interface MehtaObject {
 
     long getId();
