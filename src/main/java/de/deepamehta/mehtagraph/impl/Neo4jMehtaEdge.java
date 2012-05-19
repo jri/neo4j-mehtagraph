@@ -45,7 +45,7 @@ class Neo4jMehtaEdge extends Neo4jMehtaObject implements MehtaEdge {
         if (mehtaObjects.size() != 2) {
             // Note: custom toString() stringifier called here to avoid endless recursion.
             // The default stringifier would call getMehtaObjects() again and fail endlessly.
-            throw new RuntimeException("Graph inconsistency: mehta edge " + getId() + " connects " +
+            throw new RuntimeException("Data inconsistency: mehta edge " + getId() + " connects " +
                 mehtaObjects.size() + " mehta objects instead of 2 (" + toString(mehtaObjects) + ")");
         }
         //

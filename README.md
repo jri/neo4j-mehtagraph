@@ -32,6 +32,11 @@ Is a graph where an edge can connect other edges a known structure? What's its n
 Version History
 ---------------
 
+**v0.9** -- May 19, 2012
+
+* Extended API: retrieve edges by node IDs *and* role types
+* Compatible with DeepaMehta 4.0.11
+
 **v0.8** -- Jul 28, 2011
 
 * More flexible role type filter
@@ -76,4 +81,4 @@ Version History
 
 ------------
 Jörg Richter  
-July 28, 2011
+May 19, 2012
