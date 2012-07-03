@@ -66,6 +66,26 @@
                     </instructions>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.8.1</version>
+                <configuration>
+                    <show>private</show>
+                    <linksource>true</linksource>
+                    <links>
+                        <link>http://api.neo4j.org/1.2/</link>
+                    </links>
+                    <doclet>org.umlgraph.doclet.UmlGraphDoc</doclet>
+                       <!-- depends on a locally accessible Graphviz 'dot' executable -->
+                       <docletArtifact>
+                           <groupId>org.umlgraph</groupId>
+                           <artifactId>doclet</artifactId>
+                           <version>5.1</version>
+                       </docletArtifact>
+                    <additionalparam>-hide java.* -hide org.* -inferdepvis public -inferrel</additionalparam>
+                </configuration>
+            </plugin>
         </plugins>
         <extensions>
             <!-- Enabling the use of SCP -->
