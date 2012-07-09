@@ -77,12 +77,12 @@
                         <link>http://api.neo4j.org/1.2/</link>
                     </links>
                     <doclet>org.umlgraph.doclet.UmlGraphDoc</doclet>
-                       <!-- depends on a locally accessible Graphviz 'dot' executable -->
-                       <docletArtifact>
-                           <groupId>org.umlgraph</groupId>
-                           <artifactId>umlgraph</artifactId>
-                           <version>5.6</version>
-                       </docletArtifact>
+                        <!-- depends on a locally accessible Graphviz 'dot' executable -->
+                        <docletArtifact>
+                            <groupId>org.umlgraph</groupId>
+                            <artifactId>umlgraph</artifactId>
+                            <version>5.6</version>
+                        </docletArtifact>
                     <additionalparam>-hide java.* -hide org.* -inferdepvis public -inferrel</additionalparam>
                 </configuration>
             </plugin>

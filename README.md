@@ -13,7 +13,12 @@ Further features of this implementation:
 * The role a node/edge occupies in an edge is modeled as *role type*.
 * Traversal based on role types.
 
-When do you might want a Mehtagraph? In geneal, when you need to make the edges themself objects of discourse, just like the nodes. Some examples:
+When do you might want a Mehtagraph?
+------------------------------------
+
+In general, when you need to make the edges themself objects of discourse, just like the nodes.
+
+Some examples:
 
 * Nodes/subgraphs as edge meta-data. ACL example: the creator of an edge can be represented as a "user" node that is connected to that edge (analog the node creator).
 * Sorting edges. A specific order of a set of edges can be represented by connecting them with "sequence" edges, each with a "predecessor" and "successor" end (= role types).
