@@ -13,6 +13,7 @@ Further features of this implementation:
 * The role a node/edge occupies in an edge is modeled as *role type*.
 * Traversal based on role types.
 
+
 When do you might want a Mehtagraph?
 ------------------------------------
 

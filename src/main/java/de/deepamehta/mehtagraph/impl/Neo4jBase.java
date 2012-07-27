@@ -130,6 +130,8 @@ class Neo4jBase {
                                           new AuxiliaryEvaluator(true));
     }
 
+    // ---
+
     /**
      * The created traversal description allows to find all mehta edges between
      * the the start node/edge and the given node.
@@ -156,6 +158,23 @@ class Neo4jBase {
         return createTraversalDescription(new ConnectedNodeEvaluator(nodeId),
                                           new RoleTypeEvaluator(myRoleType, othersRoleType),
                                           new AuxiliaryEvaluator(false));
+    }
+
+    /**
+     * The created traversal description allows to find all mehta edges between
+     * the the start node/edge and the given edge.
+     * The created traversal description allows to find mehta nodes that
+     * are connected to the start node/edge via the given role types.
+     * <p>
+     * Called from {@link Neo4jMehtaGraph#getMehtaEdgesBetweenNodeAndEdge(long, long, String, String)}
+     *
+     * @param   myRoleType      Pass <code>null</code> to switch role type filter off.
+     * @param   othersRoleType  Pass <code>null</code> to switch role type filter off.
+     */
+    protected final TraversalDescription traverseToMehtaEdge(long edgeId, String myRoleType, String othersRoleType) {
+        return createTraversalDescription(new ConnectedNodeEvaluator(edgeId),
+                                          new RoleTypeEvaluator(myRoleType, othersRoleType),
+                                          new AuxiliaryEvaluator(true));
     }
 
     // ---
@@ -267,6 +286,9 @@ class Neo4jBase {
 
         private long connectedNodeId;
 
+        /**
+         * @param   connectedNodeId     ID of a Neo4j node. This ID may represent a mehta node or a mehta edge.
+         */
         private ConnectedNodeEvaluator(long connectedNodeId) {
             this.connectedNodeId = connectedNodeId;
         }

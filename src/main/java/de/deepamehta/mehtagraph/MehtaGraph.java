@@ -31,6 +31,7 @@ public interface MehtaGraph {
 
     Set<MehtaEdge> getMehtaEdges(long node1Id, long node2Id);
     Set<MehtaEdge> getMehtaEdges(long node1Id, long node2Id, String roleType1, String roleType2);
+    Set<MehtaEdge> getMehtaEdgesBetweenNodeAndEdge(long nodeId, long edgeId, String nodeRoleType, String edgeRoleType);
 
     // === Misc ===
 
