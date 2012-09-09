@@ -179,12 +179,15 @@ class Neo4jBase {
 
     // ---
 
+    /**
+     * Traverses from the specified start object and builds the traversal result.
+     */
     protected abstract class TraveralResultBuilder {
 
         private Set result = new HashSet();
 
-        protected TraveralResultBuilder(Node startNode, TraversalDescription desc) {
-            for (Path path : desc.traverse(startNode)) {
+        protected TraveralResultBuilder(Neo4jMehtaObject startObject, TraversalDescription desc) {
+            for (Path path : desc.traverse(startObject.getNode())) {
                 // sanity check
                 if (path.length() != 2) {
                     throw new RuntimeException("jri doesn't understand Neo4j traversal");

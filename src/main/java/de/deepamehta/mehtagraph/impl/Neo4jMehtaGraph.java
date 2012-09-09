@@ -72,7 +72,7 @@ public class Neo4jMehtaGraph extends Neo4jBase implements MehtaGraph {
     // ---
 
     @Override
-    public MehtaNode getMehtaNode(long id) {
+    public Neo4jMehtaNode getMehtaNode(long id) {
         return buildMehtaNode(neo4j.getNodeById(id));
     }
 
@@ -121,7 +121,10 @@ public class Neo4jMehtaGraph extends Neo4jBase implements MehtaGraph {
 
     @Override
     public MehtaEdge createMehtaEdge(MehtaObjectRole object1, MehtaObjectRole object2) {
-        Neo4jMehtaEdge mehtaEdge = createMehtaEdge();
+        Node auxiliaryNode = neo4j.createNode();
+        auxiliaryNode.setProperty(KEY_IS_MEHTA_EDGE, true);
+        Neo4jMehtaEdge mehtaEdge = buildMehtaEdge(auxiliaryNode);
+        //
         mehtaEdge.addMehtaObject(object1);
         mehtaEdge.addMehtaObject(object2);
         return mehtaEdge;
@@ -138,7 +141,7 @@ public class Neo4jMehtaGraph extends Neo4jBase implements MehtaGraph {
 
     @Override
     public Set<MehtaEdge> getMehtaEdges(long node1Id, long node2Id) {
-        return new TraveralResultBuilder(neo4j.getNodeById(node1Id), traverseToMehtaNode(node2Id)) {
+        return new TraveralResultBuilder(getMehtaNode(node1Id), traverseToMehtaNode(node2Id)) {
             @Override
             Object buildResult(Node connectedNode, Node auxiliaryNode) {
                 return buildMehtaEdge(auxiliaryNode);
@@ -148,8 +151,8 @@ public class Neo4jMehtaGraph extends Neo4jBase implements MehtaGraph {
 
     @Override
     public Set<MehtaEdge> getMehtaEdges(long node1Id, long node2Id, String roleType1, String roleType2) {
-        return new TraveralResultBuilder(neo4j.getNodeById(node1Id), traverseToMehtaNode(node2Id, roleType1,
-                                                                                                  roleType2)) {
+        return new TraveralResultBuilder(getMehtaNode(node1Id), traverseToMehtaNode(node2Id, roleType1,
+                                                                                             roleType2)) {
             @Override
             Object buildResult(Node connectedNode, Node auxiliaryNode) {
                 return buildMehtaEdge(auxiliaryNode);
@@ -160,8 +163,8 @@ public class Neo4jMehtaGraph extends Neo4jBase implements MehtaGraph {
     @Override
     public Set<MehtaEdge> getMehtaEdgesBetweenNodeAndEdge(long nodeId, long edgeId, String nodeRoleType,
                                                                                     String edgeRoleType) {
-        return new TraveralResultBuilder(neo4j.getNodeById(nodeId), traverseToMehtaEdge(edgeId, nodeRoleType,
-                                                                                                edgeRoleType)) {
+        return new TraveralResultBuilder(getMehtaNode(nodeId), traverseToMehtaEdge(edgeId, nodeRoleType,
+                                                                                           edgeRoleType)) {
             @Override
             Object buildResult(Node connectedNode, Node auxiliaryNode) {
                 return buildMehtaEdge(auxiliaryNode);
@@ -182,15 +185,5 @@ public class Neo4jMehtaGraph extends Neo4jBase implements MehtaGraph {
     public void shutdown() {
         logger.info("Shutdown DB");
         neo4j.shutdown();
-    }
-
-
-
-    // ------------------------------------------------------------------------------------------------- Private Methods
-
-    private Neo4jMehtaEdge createMehtaEdge() {
-        Node auxiliaryNode = neo4j.createNode();
-        auxiliaryNode.setProperty(KEY_IS_MEHTA_EDGE, true);
-        return buildMehtaEdge(auxiliaryNode);
     }
 }

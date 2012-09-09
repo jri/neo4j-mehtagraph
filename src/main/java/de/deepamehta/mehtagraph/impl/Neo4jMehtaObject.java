@@ -200,7 +200,7 @@ class Neo4jMehtaObject extends Neo4jBase implements MehtaObject {
 
     @Override
     public Set<ConnectedMehtaNode> getConnectedMehtaNodes(String myRoleType, String othersRoleType) {
-        return new TraveralResultBuilder(node, traverseToMehtaNodes(myRoleType, othersRoleType)) {
+        return new TraveralResultBuilder(this, traverseToMehtaNodes(myRoleType, othersRoleType)) {
             @Override
             Object buildResult(Node connectedNode, Node auxiliaryNode) {
                 return new ConnectedMehtaNode(buildMehtaNode(connectedNode), buildMehtaEdge(auxiliaryNode));
@@ -226,7 +226,7 @@ class Neo4jMehtaObject extends Neo4jBase implements MehtaObject {
 
     @Override
     public Set<ConnectedMehtaEdge> getConnectedMehtaEdges(String myRoleType, String othersRoleType) {
-        return new TraveralResultBuilder(node, traverseToMehtaEdges(myRoleType, othersRoleType)) {
+        return new TraveralResultBuilder(this, traverseToMehtaEdges(myRoleType, othersRoleType)) {
             @Override
             Object buildResult(Node connectedNode, Node auxiliaryNode) {
                 return new ConnectedMehtaEdge(buildMehtaEdge(connectedNode), buildMehtaEdge(auxiliaryNode));
