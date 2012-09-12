@@ -65,21 +65,22 @@ class Neo4jBase {
 
     protected final Neo4jMehtaNode buildMehtaNode(Node node) {
         if (node == null) {
-            throw new IllegalArgumentException("Tried to build a MehtaNode from a null Node");
+            throw new NullPointerException("Tried to build a MehtaNode from a null Node");
         }
         if (isAuxiliaryNode(node)) {
-            throw new IllegalArgumentException("ID " + node.getId() + " refers not to a MehtaNode but to a MehtaEdge");
+            throw new IllegalArgumentException("Reference error: ID " + node.getId() +
+                " refers to a MehtaEdge when the caller expects a MehtaNode");
         }
         return new Neo4jMehtaNode(node, this);
     }
 
     protected final Neo4jMehtaEdge buildMehtaEdge(Node auxiliaryNode) {
         if (auxiliaryNode == null) {
-            throw new IllegalArgumentException("Tried to build a MehtaEdge from a null auxiliary Node");
+            throw new NullPointerException("Tried to build a MehtaEdge from a null auxiliary Node");
         }
         if (!isAuxiliaryNode(auxiliaryNode)) {
-            throw new IllegalArgumentException("ID " + auxiliaryNode.getId() + " refers not to a MehtaEdge but to " +
-                "a MehtaNode");
+            throw new IllegalArgumentException("Reference error: ID " + auxiliaryNode.getId() +
+                " refers to a MehtaNode when the caller expects a MehtaEdge");
         }
         return new Neo4jMehtaEdge(auxiliaryNode, this);
     }

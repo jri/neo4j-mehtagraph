@@ -25,7 +25,7 @@ Some examples:
 * Sorting edges. A specific order of a set of edges can be represented by connecting them with "sequence" edges, each with a "predecessor" and "successor" end (= role types).
 * Sub-graphs. A sub-graph can be represented as a node that connects the nodes and edges that belong to it. A node/edge can be involved in any number of sub-graphs.
 
-Neo4j Mehtagraph is utilized as the persistence layer for [DeepaMehta 4.0](https://github.com/jri/deepamehta).  
+Neo4j Mehtagraph is utilized as the persistence layer for [DeepaMehta 4](https://github.com/jri/deepamehta).  
 However, it can be used for other applications as well.
 
 
@@ -37,6 +37,12 @@ Is a graph where an edge can connect other edges a known structure? What's its n
 
 Version History
 ---------------
+
+**v1.0** -- Sep 12, 2012
+
+* Extended API: retrieve edges between a node and an edge
+* More argument checks
+* Compatible with DeepaMehta 4.0.12
 
 **v0.9** -- May 19, 2012
 
@@ -87,4 +93,4 @@ Version History
 
 ------------
 Jörg Richter  
-May 19, 2012
+Sep 12, 2012
