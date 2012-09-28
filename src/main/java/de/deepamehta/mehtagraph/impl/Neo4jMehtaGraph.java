@@ -110,6 +110,12 @@ public class Neo4jMehtaGraph extends Neo4jBase implements MehtaGraph {
         // FIXME: new index API doesn't work with OSGi
         // for (Node node : fulltextIndex.query(key, value)) {
         for (Node node : fulltextIndex.getNodes(key, value)) {
+            // ### FIXME
+            if (isAuxiliaryNode(node)) {
+                logger.warning("### Ignoring invalid search result (ID " + node.getId() + " refers to a MehtaEdge)");
+                continue;
+            }
+            //
             nodes.add(buildMehtaNode(node));
         }
         return nodes;
