@@ -123,7 +123,7 @@ class Neo4jMehtaEdge extends Neo4jMehtaObject implements MehtaEdge {
      * Custom stringifier to avoid endless recursion in case an error occurs in getMehtaObjects().
      */
     private String toString(List<MehtaObjectRole> mehtaObjects) {
-        StringBuilder str = new StringBuilder("mehta edge " + getId());
+        StringBuilder str = new StringBuilder("mehta edge " + getId() + " " + getAttributesString(node));
         for (MehtaObjectRole mehtaObject : mehtaObjects) {
             str.append("\n        " + mehtaObject);
         }

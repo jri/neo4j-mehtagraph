@@ -25,4 +25,11 @@ public class ConnectedMehtaNode {
     public MehtaEdge getConnectingMehtaEdge() {
         return connectingMehtaEdge;
     }
+
+    // ---
+
+    @Override
+    public String toString() {
+        return "connected mehta node (node=" + getMehtaNode() + ", edge=" + getConnectingMehtaEdge() + ")";
+    }
 }
