@@ -3,6 +3,7 @@ package de.deepamehta.mehtagraph.impl;
 import de.deepamehta.mehtagraph.MehtaEdge;
 import de.deepamehta.mehtagraph.MehtaGraph;
 import de.deepamehta.mehtagraph.MehtaNode;
+import de.deepamehta.mehtagraph.MehtaObject;
 import de.deepamehta.mehtagraph.MehtaObjectRole;
 import de.deepamehta.mehtagraph.MehtaGraphTransaction;
 
@@ -176,6 +177,15 @@ public class Neo4jMehtaGraph extends Neo4jBase implements MehtaGraph {
                 return buildMehtaEdge(auxiliaryNode);
             }
         }.getResult();
+    }
+
+
+
+    // === Mehta Objects ===
+
+    @Override
+    public MehtaObject getMehtaObject(long id) {
+        return buildMehtaObject(neo4j.getNodeById(id));
     }
 
 

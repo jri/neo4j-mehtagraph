@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 
 
 
-class Neo4jMehtaObject extends Neo4jBase implements MehtaObject {
+abstract class Neo4jMehtaObject extends Neo4jBase implements MehtaObject {
 
     // ---------------------------------------------------------------------------------------------- Instance Variables
 
