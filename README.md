@@ -38,6 +38,13 @@ Is a graph where an edge can connect other edges a known structure? What's its n
 Version History
 ---------------
 
+**v1.1** -- Nov 9, 2012
+
+* Extend API: getMehtaObject()
+* More informative error log
+* Workaround a fulltext search problem
+* Last release based on Neo4j 1.2
+
 **v1.0** -- Sep 12, 2012
 
 * Extended API: retrieve edges between a node and an edge
@@ -93,4 +100,4 @@ Version History
 
 ------------
 Jörg Richter  
-Sep 12, 2012
+Nov 9, 2012
