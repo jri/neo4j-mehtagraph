@@ -3,7 +3,8 @@ package de.deepamehta.mehtagraph;
 import de.deepamehta.mehtagraph.impl.Neo4jMehtaGraph;
 
 import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.kernel.EmbeddedGraphDatabase;
+import org.neo4j.graphdb.factory.GraphDatabaseFactory;
+import org.neo4j.graphdb.factory.GraphDatabaseSettings;
 
 import java.util.logging.Logger;
 
@@ -20,7 +21,11 @@ public class MehtaGraphFactory {
     public static MehtaGraph createInstance(String databasePath) {
         GraphDatabaseService neo4j = null;
         try {
-            neo4j = new EmbeddedGraphDatabase(databasePath);
+            // ### TODO: activate for store upgrade
+            /* neo4j = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder(databasePath)
+                .setConfig(GraphDatabaseSettings.allow_store_upgrade, "true")
+                .newGraphDatabase(); */
+            neo4j = new GraphDatabaseFactory().newEmbeddedDatabase(databasePath);
             return new Neo4jMehtaGraph(neo4j);
         } catch (Exception e) {
             if (neo4j != null) {

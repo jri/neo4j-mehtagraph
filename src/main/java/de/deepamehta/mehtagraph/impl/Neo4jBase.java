@@ -10,18 +10,12 @@ import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.traversal.Evaluation;
 import org.neo4j.graphdb.traversal.Evaluator;
 import org.neo4j.graphdb.traversal.TraversalDescription;
-// FIXME: new index API of Neo4j 1.3 and 1.4 doesn't work with OSGi
-// import org.neo4j.graphdb.index.Index;
-// Using old index API instead
-import org.neo4j.index.IndexService;
-import org.neo4j.index.lucene.LuceneFulltextQueryIndexService;
+import org.neo4j.graphdb.index.Index;
 //
 import org.neo4j.kernel.Traversal;
 import org.neo4j.kernel.Uniqueness;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -40,13 +34,8 @@ class Neo4jBase {
 
     protected final GraphDatabaseService neo4j;
     protected Neo4jRelationtypeCache relTypeCache;
-    // FIXME: new index API doesn't work with OSGi
-    // protected Index<Node> exactIndex;
-    // protected Index<Node> fulltextIndex;
-    //
-    // Using old index API instead
-    protected IndexService exactIndex;
-    protected LuceneFulltextQueryIndexService fulltextIndex;
+    protected Index<Node> exactIndex;
+    protected Index<Node> fulltextIndex;
 
     // ---------------------------------------------------------------------------------------------------- Constructors
 
@@ -245,7 +234,9 @@ class Neo4jBase {
             //
             Relationship rel = path.lastRelationship();
             Node node = path.endNode();
-            if (path.length() == 1) {
+            if (path.length() == 0) {
+                continues = true;
+            } else if (path.length() == 1) {
                 continues = rel.getStartNode().getId() == node.getId();
             } else if (path.length() == 2) {
                 includes = rel.getEndNode().getId() == node.getId();

@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 public class MehtaGraphTest {
 
     private MehtaGraph mg;
+    private long edgeId;
 
     private final Logger logger = Logger.getLogger(getClass().getName());
 
@@ -32,9 +33,21 @@ public class MehtaGraphTest {
         setupContent();
     }
 
+
+    @Test
+    public void testEdge() {
+        MehtaEdge edge = mg.getMehtaEdge(edgeId);
+        assertNotNull(edge);
+        MehtaObject node1 = edge.getMehtaObject("dm4.core.type");
+        assertNotNull(node1);
+        MehtaObject node2 = edge.getMehtaObject("dm4.core.instance");
+        assertNotNull(node2);
+    }
+
     @Test
     public void testTraversal() {
         MehtaNode node = mg.getMehtaNode("uri", "dm4.core.data_type");
+        assertNotNull(node);
         MehtaNode topicType = getType(node);
         logger.info("### topicType=" + topicType);
         assertEquals("dm4.core.topic_type", topicType.getString("uri"));
@@ -58,7 +71,9 @@ public class MehtaGraphTest {
     // ------------------------------------------------------------------------------------------------- Private Methods
 
     MehtaNode getType(MehtaNode node) {
-        return node.getConnectedMehtaNode("dm4.core.instance", "dm4.core.type").getMehtaNode();
+        ConnectedMehtaNode type = node.getConnectedMehtaNode("dm4.core.instance", "dm4.core.type");
+        assertNotNull(type);
+        return type.getMehtaNode();
     }
 
     private void setupContent() {
@@ -76,6 +91,7 @@ public class MehtaGraphTest {
             //
             MehtaEdge edge = mg.createMehtaEdge(new MehtaObjectRole(node1, "dm4.core.type"),
                                                 new MehtaObjectRole(node2, "dm4.core.instance"));
+            edgeId = edge.getId();
             //
             String text1 = "DeepaMehta is a platform for collaboration and knowledge management";
             String text2 = "Lead developer of DeepaMehta is Jörg Richter";
