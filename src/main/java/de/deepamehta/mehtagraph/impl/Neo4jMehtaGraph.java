@@ -35,7 +35,7 @@ public class Neo4jMehtaGraph extends Neo4jBase implements MehtaGraph {
         try {
             // access/create exact-value index
             this.exactIndex = neo4j.index().forNodes("exact");
-            // access/create fulltext indexe
+            // access/create fulltext index
             if (neo4j.index().existsForNodes("fulltext")) {
                 this.fulltextIndex = neo4j.index().forNodes("fulltext");
             } else {
