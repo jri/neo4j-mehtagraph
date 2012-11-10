@@ -7,7 +7,7 @@
     <name>Neo4j - Mehtagraph</name>
     <groupId>de.deepamehta</groupId>
     <artifactId>neo4j-mehtagraph</artifactId>
-    <version>2.0-SNAPSHOT</version>
+    <version>1.8-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <properties>
@@ -24,11 +24,27 @@
             <groupId>org.neo4j</groupId>
             <artifactId>neo4j-lucene-index</artifactId>
             <version>1.8</version>
+            <scope>runtime</scope>
         </dependency>
+        <!-- geronimo-jta_1.1_spec (required by neo4j-kernel) -->
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jta_1.1_spec</artifactId>
+            <version>1.1.1</version>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- lucene-core (required by neo4j-lucene-index) -->
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+            <version>3.5.0</version>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- junit -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.8.2</version>
+            <version>4.10</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -51,9 +67,12 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>
-                            de.deepamehta.mehtagraph
-                        </Export-Package>
+                        <Import-Package>
+                            !ch.qos.logback.*, !org.slf4j.*, !com.sun.*, !sun.misc.*, *
+                        </Import-Package>
+                        <Embed-Dependency>
+                            neo4j-kernel, neo4j-lucene-index, lucene-core, geronimo-jta_1.1_spec
+                        </Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>
