@@ -38,12 +38,21 @@ Is a graph where an edge can connect other edges a known structure? What's its n
 Version History
 ---------------
 
+**v1.8** -- Dec 23, 2012
+
+* Based on Neo4j 1.8
+* 3rd-party dependencies are embedded (Neo4j, Lucene, JTA)
+* Compatible with DeepaMehta 4.0.13
+
+*Note: starting from version 1.8 the major and minor number reflect the version of the embedded Neo4j.*
+
 **v1.1** -- Nov 9, 2012
 
 * Extend API: getMehtaObject()
 * More informative error log
 * Workaround a fulltext search problem
-* Last release based on Neo4j 1.2
+
+*Note: Neo4j Mehtagraph 1.1 is the last version that is based on Neo4j 1.2*
 
 **v1.0** -- Sep 12, 2012
 
@@ -100,4 +109,4 @@ Version History
 
 ------------
 Jörg Richter  
-Nov 9, 2012
+Dec 23, 2012
