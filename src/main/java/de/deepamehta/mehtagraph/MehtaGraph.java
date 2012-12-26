@@ -20,6 +20,9 @@ public interface MehtaGraph {
     MehtaNode getMehtaNode(long id);
     MehtaNode getMehtaNode(String key, Object value);
 
+    // ###
+    List<MehtaNode> getMehtaNodes(String key, Object value);
+
     List<MehtaNode> queryMehtaNodes(Object value);
     List<MehtaNode> queryMehtaNodes(String key, Object value);
 

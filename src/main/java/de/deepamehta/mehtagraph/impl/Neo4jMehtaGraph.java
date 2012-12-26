@@ -82,6 +82,17 @@ public class Neo4jMehtaGraph extends Neo4jBase implements MehtaGraph {
         return node != null ? buildMehtaNode(node) : null;
     }
 
+    // ###
+
+    @Override
+    public List<MehtaNode> getMehtaNodes(String key, Object value) {
+        List nodes = new ArrayList();
+        for (Node node : exactIndex.query(key, value)) {
+            nodes.add(buildMehtaNode(node));
+        }
+        return nodes;
+    }
+
     // ---
 
     @Override

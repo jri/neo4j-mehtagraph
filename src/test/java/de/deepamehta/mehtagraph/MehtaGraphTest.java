@@ -2,6 +2,7 @@ package de.deepamehta.mehtagraph;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -55,12 +56,45 @@ public class MehtaGraphTest {
     }
 
     @Test
-    public void testIndex() {
-        List<MehtaNode> nodes1 = mg.queryMehtaNodes("DeepaMehta");
-        assertEquals(2, nodes1.size());
+    public void testFulltextIndex() {
+        List<MehtaNode> nodes;
+        // By default a Lucene index is case-insensitive:
+        nodes = mg.queryMehtaNodes("DeepaMehta"); assertEquals(2, nodes.size());
+        nodes = mg.queryMehtaNodes("deepamehta"); assertEquals(2, nodes.size());
+        nodes = mg.queryMehtaNodes("DEEPAMEHTA"); assertEquals(2, nodes.size());
+        // Lucene's default operator is OR:
+        nodes = mg.queryMehtaNodes("collaboration platform");         assertEquals(1, nodes.size());
+        nodes = mg.queryMehtaNodes("collaboration plaXXXform");       assertEquals(1, nodes.size());
+        nodes = mg.queryMehtaNodes("collaboration AND plaXXXform");   assertEquals(0, nodes.size());
+        nodes = mg.queryMehtaNodes("collaboration AND platform");     assertEquals(1, nodes.size());
+        // Phrases are set in ".."
+        nodes = mg.queryMehtaNodes("\"collaboration platform\"");     assertEquals(0, nodes.size());
+        nodes = mg.queryMehtaNodes("\"platform for collaboration\""); assertEquals(1, nodes.size());
+        // Within phrases wildcards do not work:
+        nodes = mg.queryMehtaNodes("\"platform * collaboration\"");   assertEquals(0, nodes.size());
+    }
+
+    @Test
+    public void testExactIndexWithWildcards() {
+        List<MehtaNode> nodes;
+        nodes = mg.getMehtaNodes("uri", "dm?.core.topic_type"); assertEquals(1, nodes.size());
+        nodes = mg.getMehtaNodes("uri", "*.core.topic_type");   assertEquals(1, nodes.size());
+        // => in contrast to Lucene docs a wildcard can be used as the first character of a search
+        // http://lucene.apache.org/core/old_versioned_docs/versions/3_5_0/queryparsersyntax.html
         //
-        List<MehtaNode> nodes2 = mg.queryMehtaNodes("collaboration platform");
-        assertEquals(1, nodes2.size());
+        nodes = mg.getMehtaNodes("uri", "dm4.core.*");   assertEquals(2, nodes.size());
+        nodes = mg.getMehtaNodes("uri", "dm4.*.*");      assertEquals(2, nodes.size());
+        nodes = mg.getMehtaNodes("uri", "dm4.*.*_type"); assertEquals(2, nodes.size());
+        // => more than one wildcard can be used in a search
+    }
+
+    @Test
+    public void testNegativeResults() {
+        MehtaNode node;
+        node = mg.getMehtaNode("uri", "dm4.core.data_type"); assertNotNull(node);
+        node = mg.getMehtaNode("uri", "dm4.core.*");         assertNull(node);
+        // => MehtaGraph's get-singular method supports no wildcards.
+        //    That reflects the behavior of the underlying Neo4j Index's get() method.
     }
 
     @After

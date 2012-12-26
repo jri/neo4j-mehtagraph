@@ -73,11 +73,14 @@ public interface MehtaObject {
     // === Indexing ===
 
     /**
+     * This method must only be called for index modes OFF and FULLTEXT.
+     *
      * @param   oldValue    The value to remove from index. If <code>null</code> no removal is performed.
      */
     void indexAttribute(MehtaGraphIndexMode indexMode, Object value, Object oldValue);
 
     /**
+     * @param   indexKey    Required for index modes KEY and FULLTEXT_KEY. Otherwise ignored.
      * @param   oldValue    The value to remove from index. If <code>null</code> no removal is performed.
      */
     void indexAttribute(MehtaGraphIndexMode indexMode, String indexKey, Object value, Object oldValue);

@@ -139,7 +139,7 @@ abstract class Neo4jMehtaObject extends Neo4jBase implements MehtaObject {
             }
             exactIndex.add(node, indexKey, value);                      // index new
         } else if (indexMode == MehtaGraphIndexMode.FULLTEXT) {
-            // Note: all the topic's FULLTEXT properties are indexed under the same key ("default").
+            // Note: all the topic's FULLTEXT properties are indexed under the same key ("_fulltext").
             // So, when removing from index we must explicitley give the old value.
             if (oldValue != null) {
                 fulltextIndex.remove(node, KEY_FULLTEXT, oldValue);     // remove old
